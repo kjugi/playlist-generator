@@ -3,6 +3,7 @@
   import Cookies from 'js-cookie';
   import LoginButton from './lib/LoginButton.svelte'
   import Header from './lib/Header.svelte';
+  import SearchLogic from './lib/SearchLogic.svelte';
 
   let isLogged: boolean = false;
   let isLoading: boolean = false;
@@ -11,6 +12,8 @@
     image: '',
   }
   let step = 0;
+  let artists = [];
+  let selectedArtists = [];
 
   onMount(async () => {
     const params: { [key: string]: string } = window.location.hash
@@ -75,12 +78,33 @@
     {/if}
 
     {#if step === 1}
-      <label for="search">
-        Search for first artist
-      </label>
-      <input type="text" name="search" />
+      <SearchLogic 
+        step={step}
+        artists={artists}
+        selectedArtists={selectedArtists}
+        isLoading={isLoading}
+      />
+    {/if}
 
-      <div class="results"></div>
+    {#if step === 2}
+      <p>
+        Select playlist options
+      </p>
+
+      <label for="songsPerArtist">
+        Max tracks per artists
+      </label>
+      <input type="text" name="songsPerArtist" />
+
+      <button 
+        type="button"
+        on:click={() => {
+          // TODO: Generate playlist logic
+          step++
+        }}
+      >
+        Generate playlist
+      </button>
     {/if}
 
     {#if isLoading}
