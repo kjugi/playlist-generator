@@ -1,38 +1,16 @@
 <script lang="ts">
-  import { v4 } from 'uuid';
-
   export let isLogged;
 
-  async function sha256(plain) {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(plain)
-
-    return window.crypto.subtle.digest('SHA-256', data)
-  }
-
-  function base64urlencode(a: ArrayBuffer){
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(a))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''))
-  }
-
   const runLoginAction = async () => {
-    try {
-      const hashed = await sha256(v4());
-      
-      const baseUrl = 'https://accounts.spotify.com/authorize';
-      const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: '7c9d6a1401154001bf9d43f77ec942ed',
-        scope: 'playlist-modify-private,user-read-private',
-        code_challenge: base64urlencode(hashed),
-        code_challenge_method: 'S256'
-      });
-      const fullUrl = `${baseUrl}?${params.toString()}&redirect_uri=${encodeURIComponent('http://localhost:3000/')}`;
+    const baseUrl = 'https://accounts.spotify.com/authorize';
+    const params = new URLSearchParams({
+      response_type: 'token',
+      client_id: '7c9d6a1401154001bf9d43f77ec942ed',
+      scope: 'playlist-modify-private,user-read-private',
+    });
+    const fullUrl = `${baseUrl}?${params.toString()}&redirect_uri=${encodeURIComponent('http://localhost:3000/')}`;
 
-      window.open(fullUrl)
-    } catch (err) {
-      console.error(err);
-    }
+    window.location.replace(fullUrl);
   }
 </script>
 

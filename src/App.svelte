@@ -1,13 +1,97 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import Cookies from 'js-cookie';
   import LoginButton from './lib/LoginButton.svelte'
+  import Header from './lib/Header.svelte';
 
   let isLogged: boolean = false;
+  let isLoading: boolean = false;
+  let userData = {
+    name: '',
+    image: '',
+  }
+  let step = 0;
+
+  onMount(async () => {
+    const params: { [key: string]: string } = window.location.hash
+      .substring(1)
+      .split('&')
+      .reduce((acc, singleHash) => {
+        const keyValue = singleHash.split('=');
+
+        return {
+          ...acc,
+          [keyValue[0]]: keyValue[1]
+        }
+      }, {});
+
+    if (params?.access_token && !Cookies.get('token')) {
+      Cookies.set('token', params.access_token);
+      isLogged = true;
+    } else if (Cookies.get('token') && !params.error) {
+      isLogged = true
+    } else {
+      Cookies.remove('token');
+      isLogged = false;
+    }
+
+    if (isLogged) {
+      await fetchUserData();
+    }
+  });
+
+  const fetchUserData = async () => {
+    isLoading = true;
+
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        }
+      })
+      const data = await response.json();
+
+      userData.name = data.display_name;
+      userData.image = data.images[0].url || '';
+    } catch (err) {
+      console.log(err);
+    } finally {
+      isLoading = false;
+    }
+  }
 </script>
 
 <main>
+  <Header isLogged={isLogged} userData={userData} />
+
   {#if !isLogged}
     <LoginButton isLogged={isLogged} />
+  {:else}
+    {#if step === 0}
+      <button type="button" on:click={() => step++}>
+        Start new playlist!
+      </button>
+    {/if}
+
+    {#if step === 1}
+      <label for="search">
+        Search for first artist
+      </label>
+      <input type="text" name="search" />
+
+      <div class="results"></div>
+    {/if}
+
+    {#if isLoading}
+      <div class="global-loader">
+        <p>
+          Loading data...
+        </p>
+      </div>
+    {/if}
   {/if}
+
 </main>
 
 <style>
@@ -16,15 +100,16 @@
       Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
 
-  main {
-    text-align: center;
-    padding: 1em;
-    margin: 0 auto;
+  :global(*) {
+    box-sizing: border-box;
   }
 
-  img {
-    height: 16rem;
-    width: 16rem;
+  :global(body) {
+    margin: 0;
+  }
+
+  main {
+    margin: 0 auto;
   }
 
   h1 {
