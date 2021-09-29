@@ -25,15 +25,22 @@
           'Authorization': `Bearer ${Cookies.get('token')}`
         }
       })
-      const data = await response.json();
+      const data: SearchArtistResponse = await response.json();
 
-      console.log(data)
       artists = data.artists.items;
     } catch (err) {
       console.log(err);
     } finally {
       isLoading = false;
     }
+  }
+
+  const selectArtist = (artist: SingleArtist) => {
+    selectedArtists = [...selectedArtists, artist]
+  }
+
+  const filterOutArtist = (artist: SingleArtist) => {
+    selectedArtists = selectedArtists.filter(single => single.id !== artist.id)
   }
 </script>
 
@@ -46,11 +53,13 @@
   <div class="results">
     {#each artists as artist}
       <div class="single-result">
-        <img 
-          src={artist.images[0].url}
-          alt={artist.name} 
-          class="single-result-image"
-        />
+        {#if artist.images[0]?.url}
+          <img
+            src={artist.images[0].url}
+            alt={artist.name}
+            class="single-result-image"
+          />
+        {/if}
         <p>
           Name:
           <a href={artist.external_urls.spotify} target="_blank">
@@ -63,21 +72,48 @@
           {artist.followers.total}
         </p>
 
-        <button type="button">
+        <button
+          type="button"
+          disabled={!!selectedArtists.find(el => el.id === artist.id)}
+          on:click={() => selectArtist(artist)}
+        >
           Select artist
         </button>
       </div>
     {/each}
   </div>
 
-  <div class="selected-artists"></div>
+  <div class="selected-artists">
+    {#each selectedArtists as artist}
+      <div class="single-result">
+        <img
+          src={artist.images[0].url}
+          alt={artist.name}
+          class="single-result-image"
+        />
+        <p>
+          Name:
+          <a href={artist.external_urls.spotify} target="_blank">
+            {artist.name}
+          </a>
+        </p>
+
+        <button
+          type="button"
+          on:click={() => filterOutArtist(artist)}
+        >
+          Remove artist
+        </button>
+      </div>
+    {/each}
+  </div>
 
   {#if selectedArtists.length < 2}
     <span>
       Required at least 2 selected artist*
     </span>
   {/if}
-  <button 
+  <button
     type="button"
     disabled={selectedArtists.length < 2}
     on:click={() => step++}
