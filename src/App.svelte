@@ -113,6 +113,14 @@
       >
         Generate playlist
       </button>
+      <button
+        type="button"
+        on:click={() => {
+          step--
+        }}
+      >
+        Back
+      </button>
     {/if}
 
     {#if isLoading}
