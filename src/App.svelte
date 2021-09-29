@@ -5,6 +5,8 @@
   import Header from './lib/Header.svelte';
   import SearchLogic from './lib/SearchLogic.svelte';
 
+  import type { SingleArtist } from './types/artists';
+
   let isLogged: boolean = false;
   let isLoading: boolean = false;
   let userData = {
@@ -12,11 +14,11 @@
     image: '',
   }
   let step = 0;
-  let artists = [];
-  let selectedArtists = [];
+  let artists: SingleArtist[] = [];
+  let selectedArtists: SingleArtist[] = [];
 
   onMount(async () => {
-    const params: { [key: string]: string } = window.location.hash
+    const params: { [key: string]: string | number } = window.location.hash
       .substring(1)
       .split('&')
       .reduce((acc, singleHash) => {
@@ -96,7 +98,7 @@
       </label>
       <input type="text" name="songsPerArtist" />
 
-      <button 
+      <button
         type="button"
         on:click={() => {
           // TODO: Generate playlist logic

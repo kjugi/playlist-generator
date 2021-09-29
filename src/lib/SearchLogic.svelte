@@ -1,10 +1,11 @@
 <script lang="ts">
   import Cookies from 'js-cookie';
+  import type { SearchArtistResponse, SingleArtist } from 'src/types/artists';
 
-  export let artists;
-  export let selectedArtists;
-  export let step;
-  export let isLoading;
+  export let artists: SingleArtist[];
+  export let selectedArtists: SingleArtist[];
+  export let step: number;
+  export let isLoading: boolean;
 
   const searchArtist = async (e: Event & {
     currentTarget: EventTarget & HTMLInputElement;
@@ -73,7 +74,7 @@
 
   {#if selectedArtists.length < 2}
     <span>
-      Required at least 2 selected artist
+      Required at least 2 selected artist*
     </span>
   {/if}
   <button 

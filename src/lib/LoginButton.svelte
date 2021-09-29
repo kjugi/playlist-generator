@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let isLogged;
+  export let isLogged: boolean;
 
   const runLoginAction = async () => {
     const baseUrl = 'https://accounts.spotify.com/authorize';
