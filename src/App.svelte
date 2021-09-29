@@ -86,11 +86,11 @@
     {/if}
 
     {#if step === 1}
-      <SearchLogic 
-        step={step}
-        artists={artists}
-        selectedArtists={selectedArtists}
-        isLoading={isLoading}
+      <SearchLogic
+        bind:step
+        bind:artists
+        bind:selectedArtists
+        bind:isLoading
       />
     {/if}
 
