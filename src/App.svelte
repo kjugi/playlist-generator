@@ -4,6 +4,7 @@
   import LoginButton from './lib/LoginButton.svelte'
   import Header from './lib/Header.svelte';
   import SearchLogic from './lib/SearchLogic.svelte';
+  import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
 
   import type { SingleArtist } from './types/artists';
 
@@ -95,32 +96,11 @@
     {/if}
 
     {#if step === 2}
-      <p>
-        Select playlist options
-      </p>
-
-      <label for="songsPerArtist">
-        Max tracks per artists
-      </label>
-      <input type="text" name="songsPerArtist" />
-
-      <button
-        type="button"
-        on:click={() => {
-          // TODO: Generate playlist logic
-          step++
-        }}
-      >
-        Generate playlist
-      </button>
-      <button
-        type="button"
-        on:click={() => {
-          step--
-        }}
-      >
-        Back
-      </button>
+      <GeneratePlaylist
+        bind:selectedArtists
+        bind:step
+        bind:isLoading
+      />
     {/if}
 
     {#if isLoading}
