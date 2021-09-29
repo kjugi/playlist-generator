@@ -31,7 +31,13 @@
       }, {});
 
     if (params?.access_token && !Cookies.get('token')) {
-      Cookies.set('token', params.access_token);
+      const expiryInDays = Math.floor(Number(params?.expires_in) / (3600*24));
+
+      Cookies.set(
+        'token',
+        String(params.access_token),
+        { expires: expiryInDays }
+      );
       isLogged = true;
     } else if (Cookies.get('token') && !params.error) {
       isLogged = true
