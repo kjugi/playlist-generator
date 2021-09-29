@@ -31,7 +31,7 @@
       }, {});
 
     if (params?.access_token && !Cookies.get('token')) {
-      const expiryInDays = Math.floor(Number(params?.expires_in) / (3600*24));
+      const expiryInDays = Number((Number(params?.expires_in) / (3600*24)).toFixed(2));
 
       Cookies.set(
         'token',
