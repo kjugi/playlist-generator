@@ -42,15 +42,41 @@ import type { SingleTrack } from "src/types/tracks";
           }
         })
       const data: ArtistAlbumListResponse = await response.json();
+      const albumIds = data.items.map(artistAlbum => artistAlbum.id);
 
-      console.log(data);
-      // const albumIds = data.items.map(artistAlbum => artistAlbum.id);
-
-      // for (let n = 0; n < albumIds.length; n++) {
-
-      // }
+      await fetchAlbumsWithTracks(id, albumIds);
     } catch (err) {
       isError = true;
+    }
+  }
+
+  const fetchAlbumsWithTracks = async (artistId: string, albumIds: string[]) => {
+    if (Math.ceil(albumIds.length / 20) > 1){
+      // TOOD: Create unified solution for asking for resources in loop
+      // for (let n = 0; n < Math.floor(albumIds.length / 20); n++) {
+
+      // }
+    } else {
+      const params = new URLSearchParams({
+        ids: albumIds.join(','),
+        market: 'US',
+      });
+      const url = new URL('https://api.spotify.com/v1/albums');
+      url.search = params.toString();
+
+      const albums = await fetch(String(url), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        }
+      })
+      const data = await albums.json();
+
+      // TODO: Fix pushing to array
+      // artistAlbums[artistId] = data.albums;
+
+      const tracksId = data.albums.flatMap(album => album.tracks.items).map(track => track.id)
+      // TODO: Do the same thing as we are doing with albums and request them in loop
     }
   }
 
