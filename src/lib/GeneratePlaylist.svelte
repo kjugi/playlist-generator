@@ -8,6 +8,7 @@ import type { SingleTrack } from "src/types/tracks";
   export let selectedArtists: SingleArtist[];
   export let step: number;
   export let isLoading: boolean;
+  export let playlistType: string;
 
   let artistAlbums: {
     [key: string]: SingleAlbum[];

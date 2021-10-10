@@ -5,6 +5,7 @@
   import Header from './lib/Header.svelte';
   import SearchLogic from './lib/SearchLogic.svelte';
   import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
+  import GenerateType from './lib/GenerateType.svelte';
 
   import type { SingleArtist } from './types/artists';
 
@@ -17,6 +18,7 @@
   let step = 0;
   let artists: SingleArtist[] = [];
   let selectedArtists: SingleArtist[] = [];
+  let playlistType = 'topSongs';
 
   onMount(async () => {
     const params: { [key: string]: string | number } = window.location.hash
@@ -96,6 +98,16 @@
     {/if}
 
     {#if step === 2}
+      <GenerateType
+        bind:step
+        bind:isLoading
+        bind:playlistType
+      />
+    {/if}
+
+    {playlistType}
+
+    {#if step === 3}
       <GeneratePlaylist
         bind:selectedArtists
         bind:step
