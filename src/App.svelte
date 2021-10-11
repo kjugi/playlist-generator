@@ -6,19 +6,22 @@
   import SearchLogic from './lib/SearchLogic.svelte';
   import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
   import GenerateType from './lib/GenerateType.svelte';
+  import { PlaylistType as PlaylistEnum } from './types/playlist';
 
   import type { SingleArtist } from './types/artists';
+  import type { PlaylistType } from './types/playlist';
 
   let isLogged: boolean = false;
   let isLoading: boolean = false;
   let userData = {
     name: '',
     image: '',
+    id: '',
   }
   let step = 0;
   let artists: SingleArtist[] = [];
   let selectedArtists: SingleArtist[] = [];
-  let playlistType = 'topSongs';
+  let playlistType: PlaylistType = PlaylistEnum.TOPSONGS;
 
   onMount(async () => {
     const params: { [key: string]: string | number } = window.location.hash
@@ -111,6 +114,7 @@
         bind:step
         bind:isLoading
         bind:playlistType
+        bind:userData
       />
     {/if}
 
