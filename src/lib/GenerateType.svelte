@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { PlaylistType } from "src/types/playlist";
+
   export let step: number;
   export let isLoading: boolean;
-  export let playlistType: string;
+  export let playlistType: PlaylistType;
 </script>
 
 <div>

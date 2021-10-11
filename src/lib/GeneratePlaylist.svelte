@@ -1,14 +1,19 @@
 <script lang="ts">
 import Cookies from "js-cookie";
 import type { ArtistAlbumListResponse, SingleAlbum } from "src/types/albums";
+import { PlaylistType as PlaylistEnum } from "../types/playlist";
 
 import type { SingleArtist } from "src/types/artists";
+import type { PlaylistType } from "src/types/playlist";
 import type { SingleTrack } from "src/types/tracks";
 
   export let selectedArtists: SingleArtist[];
   export let step: number;
   export let isLoading: boolean;
-  export let playlistType: string;
+  export let playlistType: PlaylistType;
+  export let userData: {
+    id: string;
+  }
 
   let artistAlbums: {
     [key: string]: SingleAlbum[];
@@ -22,8 +27,81 @@ import type { SingleTrack } from "src/types/tracks";
   let errorMessage = '';
 
   const generatePlaylist = async () => {
+    isLoading = true;
+
+    switch (playlistType) {
+      case PlaylistEnum.TOPSONGS:
+        await generateFromTopSongs
+      break;
+      case PlaylistEnum.FROMALL:
+        await generateFromAll();
+      break;
+      case PlaylistEnum.LATESTALBUM:
+        generateFromLatestAlbum();
+      break;
+      default:
+        return;
+    }
+  }
+
+  const createSpotifyPlaylist = async () => {
     try {
-      isLoading = true;
+      const response = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists?public=false&name='Test private playlist'`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        }
+      })
+      const playlistData: {
+        id: string;
+      } = await response.json();
+
+      // TOOD: Adding tracks
+      // await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${Cookies.get('token')}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: {
+      //     // Max 100 tracks
+      //     uris: "[]",
+      //   }
+      // })
+    } catch (err) {
+      isError = true;
+    }
+  }
+
+  const generateFromTopSongs = async () => {
+    const topTracks = [];
+
+    try {
+      for (let i = 0; i < selectedArtists.length; i++) {
+        const artistId = selectedArtists[i].id;
+        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          }
+        })
+        const data = await response.json();
+
+        topTracks.push(...data.tracks);
+
+        await createSpotifyPlaylist();
+      }
+    } catch (err) {
+      isError = true;
+    } finally {
+      isLoading = false;
+
+      console.log(topTracks);
+    }
+  }
+
+  const generateFromAll = async () => {
+    try {
       for (let i = 0; i < selectedArtists.length; i++) {
         await fetchArtistAlbums(selectedArtists[i].id);
       }
@@ -32,6 +110,10 @@ import type { SingleTrack } from "src/types/tracks";
     } finally {
       isLoading = false;
     }
+  }
+
+  const generateFromLatestAlbum = () => {
+    console.log('TODO: Generate from latest album');
   }
 
   const fetchArtistAlbums = async (id: string) => {
