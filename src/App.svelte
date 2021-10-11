@@ -105,13 +105,12 @@
       />
     {/if}
 
-    {playlistType}
-
     {#if step === 3}
       <GeneratePlaylist
         bind:selectedArtists
         bind:step
         bind:isLoading
+        bind:playlistType
       />
     {/if}
 
