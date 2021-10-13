@@ -71,7 +71,9 @@
 
       userData.name = data.display_name;
       userData.image = data.images[0].url || '';
+      userData.id = data.id
     } catch (err) {
+      // TODO: Add global catch for 404 and run logout
       console.log(err);
     } finally {
       isLoading = false;
