@@ -21,8 +21,10 @@ import type { SingleTrack } from "src/types/tracks";
   let albumTracks: {
     [key: string]: SingleTrack[];
   }
+  let tracks: SingleTrack[] = [];
 
   let songsPerArtist = 0;
+  let playlistName = '';
   let isError = false;
   let errorMessage = '';
 
@@ -31,7 +33,7 @@ import type { SingleTrack } from "src/types/tracks";
 
     switch (playlistType) {
       case PlaylistEnum.TOPSONGS:
-        await generateFromTopSongs
+        await generateFromTopSongs();
       break;
       case PlaylistEnum.FROMALL:
         await generateFromAll();
@@ -46,36 +48,43 @@ import type { SingleTrack } from "src/types/tracks";
 
   const createSpotifyPlaylist = async () => {
     try {
-      const response = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists?public=false&name='Test private playlist'`, {
+      const response = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${Cookies.get('token')}`
-        }
+        },
+        body: JSON.stringify({
+          name: playlistName,
+          public: false
+        })
       })
       const playlistData: {
         id: string;
       } = await response.json();
 
-      // TOOD: Adding tracks
-      // await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${Cookies.get('token')}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: {
-      //     // Max 100 tracks
-      //     uris: "[]",
-      //   }
-      // })
+      // TOOD: Adding tracks in loop per 100
+      await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uris: tracks.map(track => track.uri),
+        })
+      })
     } catch (err) {
       isError = true;
+    } finally {
+      playlistName = '';
+      tracks = [];
+      isLoading = false;
+      // TODO: Add success page
+      step = 0;
     }
   }
 
   const generateFromTopSongs = async () => {
-    const topTracks = [];
-
     try {
       for (let i = 0; i < selectedArtists.length; i++) {
         const artistId = selectedArtists[i].id;
@@ -87,16 +96,13 @@ import type { SingleTrack } from "src/types/tracks";
         })
         const data = await response.json();
 
-        topTracks.push(...data.tracks);
+        tracks.push(...data.tracks);
 
-        await createSpotifyPlaylist();
       }
+
+      await createSpotifyPlaylist();
     } catch (err) {
       isError = true;
-    } finally {
-      isLoading = false;
-
-      console.log(topTracks);
     }
   }
 
@@ -170,22 +176,37 @@ import type { SingleTrack } from "src/types/tracks";
     Select playlist options
   </p>
 
-  <label for="songsPerArtist">
-    Max tracks per artists
+  <label for="playlistName">
+    Playlist name
   </label>
   <input
     type="text"
-    name="songsPerArtist"
-    bind:value={songsPerArtist}
+    name="playlistName"
+    bind:value={playlistName}
   />
+
+  {#if playlistType !== PlaylistEnum.TOPSONGS}
+    <label for="songsPerArtist">
+      Max tracks per artists
+    </label>
+    <input
+      type="text"
+      name="songsPerArtist"
+      bind:value={songsPerArtist}
+    />
+  {/if}
 
   <div class="actions">
     <button
       type="button"
       disabled={
-        songsPerArtist === 0 &&
-        selectedArtists.length > 0 &&
-        !isLoading
+        playlistType !== PlaylistEnum.TOPSONGS &&
+        (
+          songsPerArtist === 0 ||
+          selectedArtists.length === 0 ||
+          playlistName.length === 0 ||
+          !isLoading
+        )
       }
       on:click={generatePlaylist}
     >
