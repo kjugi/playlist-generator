@@ -37,4 +37,23 @@ import type { PlaylistType } from "src/types/playlist";
     bind:group={playlistType}
   />
   <label for="latestAlbum">Latest album only</label>
+
+  <div class="actions">
+    <button
+      type="button"
+      on:click={() => {
+        step++
+      }}
+    >
+      Go next
+    </button>
+    <button
+      type="button"
+      on:click={() => {
+        step--
+      }}
+    >
+      Back
+    </button>
+  </div>
 </div>

@@ -13,6 +13,7 @@ export type SingleTrack = {
   popularity: number;
   track_number: number;
   type: string;
+  uri: string;
 };
 
 export type AlbumTracksResponse = {
