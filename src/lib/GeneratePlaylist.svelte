@@ -118,8 +118,24 @@ import type { SingleTrack } from "src/types/tracks";
     }
   }
 
-  const generateFromLatestAlbum = () => {
-    console.log('TODO: Generate from latest album');
+  const generateFromLatestAlbum = async () => {
+    try {
+      for (let i = 0; i < selectedArtists.length; i++) {
+        const artistId = selectedArtists[i].id;
+        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album&market=US&limit=1`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            }
+          })
+        const data: ArtistAlbumListResponse = await response.json();
+        const albumIds = data.items.map(artistAlbum => artistAlbum.id);
+
+        await fetchAlbumsWithTracks(artistId, albumIds);
+      }
+    } catch (err) {
+      isError = true;
+    }
   }
 
   const fetchArtistAlbums = async (id: string) => {
