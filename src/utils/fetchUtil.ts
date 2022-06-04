@@ -1,9 +1,13 @@
 import Cookies from "js-cookie";
 
+export type QueryParams = {
+  [key: string]: string | number | boolean
+};
+
 export type FetchUtilProps = {
   path: string;
   configProps: RequestInit;
-  queryParams?: {[key: string]: string | number | boolean};
+  queryParams?: QueryParams;
   baseUrl?: string;
 }
 
