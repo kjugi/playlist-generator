@@ -36,10 +36,15 @@ import type { SingleTrack } from "src/types/tracks";
         await generateFromTopSongs();
       break;
       case PlaylistEnum.FROMALL:
-        await generateFromAll();
+        await fromPickedArtists(
+          fetchArtistAlbums,
+        );
       break;
       case PlaylistEnum.LATESTALBUM:
-        generateFromLatestAlbum();
+        await fromPickedArtists(
+          fetchArtistAlbums,
+          1
+        );
       break;
       default:
         return;
@@ -102,10 +107,13 @@ import type { SingleTrack } from "src/types/tracks";
     }
   }
 
-  const generateFromAll = async () => {
+  const fromPickedArtists = async (
+    callback: (id: string, limit: number) => Promise<void>,
+    limit?: number
+  ) => {
     try {
       for (let i = 0; i < selectedArtists.length; i++) {
-        await fetchArtistAlbums(selectedArtists[i].id);
+        await callback(selectedArtists[i].id, limit);
       }
     } catch (err) {
       isError = true;
@@ -114,30 +122,7 @@ import type { SingleTrack } from "src/types/tracks";
     }
   }
 
-  const generateFromLatestAlbum = async () => {
-    try {
-      for (let i = 0; i < selectedArtists.length; i++) {
-        const artistId = selectedArtists[i].id;
-        const data: ArtistAlbumListResponse = await fetchUtil({
-          path: `/artists/${artistId}/albums`,
-          configProps: {
-            method: 'GET',
-          },
-          queryParams: {
-            include_groups: 'album',
-            limit: 1,
-          }
-        });
-        const albumIds = data.items.map(artistAlbum => artistAlbum.id);
-
-        await fetchAlbumsWithTracks(artistId, albumIds);
-      }
-    } catch (err) {
-      isError = true;
-    }
-  }
-
-  const fetchArtistAlbums = async (id: string) => {
+  const fetchArtistAlbums = async (id: string, limit?: number) => {
     try {
       const data: ArtistAlbumListResponse = await fetchUtil({
         path: `/artists/${id}/albums`,
@@ -146,6 +131,7 @@ import type { SingleTrack } from "src/types/tracks";
         },
         queryParams: {
           include_groups: 'album',
+          limit: limit || 20,
         }
       })
       const albumIds = data.items.map(artistAlbum => artistAlbum.id);
