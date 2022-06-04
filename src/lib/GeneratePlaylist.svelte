@@ -197,13 +197,10 @@ import type { SingleTrack } from "src/types/tracks";
     <button
       type="button"
       disabled={
-        playlistType !== PlaylistEnum.TOPSONGS &&
-        (
-          songsPerArtist === 0 ||
-          selectedArtists.length === 0 ||
-          playlistName.length === 0 ||
-          !isLoading
-        )
+        selectedArtists.length === 0 ||
+        playlistName.length === 0 ||
+        !Boolean(songsPerArtist) ||
+        isLoading
       }
       on:click={generatePlaylist}
     >
