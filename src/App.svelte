@@ -8,6 +8,7 @@
   import GenerateType from './lib/GenerateType.svelte';
   import { fetchUtil } from './utils/fetchUtil';
   import { PlaylistType as PlaylistEnum } from './types/playlist';
+  import styles from './css/global.module.css';
 
   import type { SingleArtist } from './types/artists';
   import type { PlaylistType } from './types/playlist';
@@ -82,95 +83,75 @@
 
 <main>
   <Header isLogged={isLogged} userData={userData} />
-
-  {#if !isLogged}
-    <LoginButton isLogged={isLogged} />
-  {:else}
-    {#if step === 0}
-      <button type="button" on:click={() => step++}>
-        Start new playlist!
-      </button>
-    {/if}
-
-    {#if step === 1}
-      <SearchLogic
-        bind:step
-        bind:artists
-        bind:selectedArtists
-        bind:isLoading
-      />
-    {/if}
-
-    {#if step === 2}
-      <GenerateType
-        bind:step
-        bind:isLoading
-        bind:playlistType
-      />
-    {/if}
-
-    {#if step === 3}
-      <GeneratePlaylist
-        bind:selectedArtists
-        bind:step
-        bind:isLoading
-        bind:playlistType
-        bind:userData
-      />
-    {/if}
-
-    {#if isLoading}
-      <div class="global-loader">
-        <p>
-          Loading data...
-        </p>
+  <div class="content">
+    {#if !isLogged}
+      <div class="login-wrapper">
+        <LoginButton isLogged={isLogged} />
       </div>
-    {/if}
-  {/if}
+    {:else}
+      {#if step === 0}
+        <button
+          type="button"
+          class={styles.primary}
+          on:click={() => step++}
+        >
+          Start new playlist!
+        </button>
+      {/if}
 
+      {#if step === 1}
+        <SearchLogic
+          bind:step
+          bind:artists
+          bind:selectedArtists
+          bind:isLoading
+        />
+      {/if}
+
+      {#if step === 2}
+        <GenerateType
+          bind:step
+          bind:isLoading
+          bind:playlistType
+        />
+      {/if}
+
+      {#if step === 3}
+        <GeneratePlaylist
+          bind:selectedArtists
+          bind:step
+          bind:isLoading
+          bind:playlistType
+          bind:userData
+        />
+      {/if}
+
+      {#if isLoading}
+        <div class="global-loader">
+          <p>
+            Loading data...
+          </p>
+        </div>
+      {/if}
+    {/if}
+  </div>
 </main>
 
 <style>
-  :root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-
-  :global(*) {
-    box-sizing: border-box;
-  }
-
-  :global(body) {
-    margin: 0;
-  }
-
-  main {
+  .content {
+    max-width: 1280px;
     margin: 0 auto;
+    padding: 24px;
   }
 
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4rem;
-    font-weight: 100;
-    line-height: 1.1;
-    margin: 2rem auto;
-    max-width: 14rem;
-  }
-
-  p {
-    max-width: 14rem;
-    margin: 1rem auto;
-    line-height: 1.35;
+  .login-wrapper {
+    display: flex;
+    justify-content: center;
   }
 
   @media (min-width: 480px) {
-    h1 {
-      max-width: none;
-    }
-
-    p {
-      max-width: none;
+    .content {
+      padding: 24px 0;
     }
   }
 </style>

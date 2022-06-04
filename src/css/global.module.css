@@ -1,0 +1,58 @@
+:root {
+  font-family: sans-serif, 'Helvetica Neue', Helvetica, Arial;
+  --primary-color: #1DB954;
+  --green-color: var(--primary-color);
+  --green-hover-color: #1ed760;
+  --white-color: #FFF;
+  --black-color: #191414;
+}
+
+:global(*) {
+  box-sizing: border-box;
+}
+
+:global(body) {
+  margin: 0;
+}
+
+h1 {
+  margin: 24px auto;
+  color: var(--black-color);
+  text-transform: uppercase;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+p {
+  margin: 12px auto;
+  line-height: 1.35;
+}
+
+button {
+  outline: none;
+  background-color: transparent;
+  border: unset;
+  font-family: inherit;
+  font-size: inherit;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+button.primary {
+  min-width: 200px;
+  padding: 12px 24px;
+  background-color: var(--green-color);
+  border-radius: 2em;
+  color: var(--white-color);
+  font-weight: 700;
+}
+
+button.primary:focus,
+button.primary:hover {
+  background-color: var(--green-hover-color);
+  border: unset;
+}
+
+button.primary:active {
+  background-color: var(--green-hover-color);
+}

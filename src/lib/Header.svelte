@@ -8,43 +8,55 @@
 </script>
 
 <header>
+  <div class="logo-wrapper">
+    <img
+      class="logo"
+      src="/logo.png"
+      alt="main logo on the page"
+    />
+    <span class="logo-description">
+      playlist generator
+    </span>
+  </div>
   {#if isLogged}
-    <p>
-      Hi, {userData.name}
-    </p>
+    <div>
+      <p>
+        Hi, {userData.name}
+      </p>
 
-    <div class="menu-container">
-      <button 
-        type="button"
-        class="menu-trigger"
-        on:click={() => {
-          menuOpened = !menuOpened;
-        }}
-      >
-        <img 
-          src={userData.image}
-          alt="Your profile avatar"
-          class="profile-image"
-        />
-        <span class="menu-trigger-icon">
-          >
-        </span>
-      </button>
+      <div class="menu-container">
+        <button
+          type="button"
+          class="menu-trigger"
+          on:click={() => {
+            menuOpened = !menuOpened;
+          }}
+        >
+          <img
+            src={userData.image}
+            alt="Your profile avatar"
+            class="profile-image"
+          />
+          <span class="menu-trigger-icon">
+            >
+          </span>
+        </button>
 
-      {#if menuOpened}
-        <div class="menu-items">
-          <button 
-            type="button"
-            class="menu-item-button"
-            on:click={() => {
-              Cookie.remove('token')
-              window.location.replace('/')
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      {/if}
+        {#if menuOpened}
+          <div class="menu-items">
+            <button
+              type="button"
+              class="menu-item-button"
+              on:click={() => {
+                Cookie.remove('token')
+                window.location.replace('/')
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        {/if}
+      </div>
     </div>
   {/if}
 </header>
@@ -53,17 +65,27 @@
   header {
     position: relative;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding: 16px;
-    background-color: #272727;
-    color: #fff;
+    background-color: var(--black-color);
+    color: var(--white-color);
+  }
+
+  .logo-description {
+    display: block;
+    font-size: 12px;
+    font-weight: 100;
+  }
+
+  .logo {
+    width: 24px;
   }
 
   button {
     background-color: transparent;
     border: none;
-    color: #fff;
+    color: var(--white-color);
     cursor: pointer;
   }
 
@@ -83,10 +105,10 @@
     right: 0;
     bottom: -32px;
     width: 200px;
-    background: #272727;
+    background: var(--black-color);
   }
 
-  .menu-item-button { 
+  .menu-item-button {
     width: 100%;
     padding: 8px 16px;
   }
