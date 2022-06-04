@@ -1,8 +1,8 @@
 <script lang="ts">
-import Cookies from "js-cookie";
-import type { ArtistAlbumListResponse, SingleAlbum } from "src/types/albums";
+import { fetchUtil } from "src/utils/fetchUtil";
 import { PlaylistType as PlaylistEnum } from "../types/playlist";
 
+import type { ArtistAlbumListResponse, SingleAlbum } from "src/types/albums";
 import type { SingleArtist } from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
 import type { SingleTrack } from "src/types/tracks";
@@ -48,31 +48,29 @@ import type { SingleTrack } from "src/types/tracks";
 
   const createSpotifyPlaylist = async () => {
     try {
-      const response = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`
-        },
-        body: JSON.stringify({
-          name: playlistName,
-          public: false
-        })
-      })
       const playlistData: {
         id: string;
-      } = await response.json();
+      } = await fetchUtil({
+        path: `/users/${userData.id}/playlists`,
+        configProps: {
+          method: 'POST',
+          body: JSON.stringify({
+            name: playlistName,
+            public: false
+          })
+        },
+      });
 
       // TOOD: Adding tracks in loop per 100
-      await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`,
-          'Content-Type': 'application/json'
+      await fetchUtil({
+        path: `/playlists/${playlistData.id}/tracks`,
+        configProps: {
+          method: 'POST',
+          body: JSON.stringify({
+            uris: tracks.map(track => track.uri),
+          })
         },
-        body: JSON.stringify({
-          uris: tracks.map(track => track.uri),
-        })
-      })
+      });
     } catch (err) {
       isError = true;
     } finally {
@@ -88,16 +86,14 @@ import type { SingleTrack } from "src/types/tracks";
     try {
       for (let i = 0; i < selectedArtists.length; i++) {
         const artistId = selectedArtists[i].id;
-        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`
-          }
-        })
-        const data = await response.json();
+        const data = await fetchUtil({
+          path: `/artists/${artistId}/top-tracks`,
+          configProps: {
+            method: 'GET',
+          },
+        });
 
         tracks.push(...data.tracks);
-
       }
 
       await createSpotifyPlaylist();
@@ -122,13 +118,16 @@ import type { SingleTrack } from "src/types/tracks";
     try {
       for (let i = 0; i < selectedArtists.length; i++) {
         const artistId = selectedArtists[i].id;
-        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album&market=US&limit=1`, {
+        const data: ArtistAlbumListResponse = await fetchUtil({
+          path: `/artists/${artistId}/albums`,
+          configProps: {
             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${Cookies.get('token')}`
-            }
-          })
-        const data: ArtistAlbumListResponse = await response.json();
+          },
+          queryParams: {
+            include_groups: 'album',
+            limit: 1,
+          }
+        });
         const albumIds = data.items.map(artistAlbum => artistAlbum.id);
 
         await fetchAlbumsWithTracks(artistId, albumIds);
@@ -140,13 +139,15 @@ import type { SingleTrack } from "src/types/tracks";
 
   const fetchArtistAlbums = async (id: string) => {
     try {
-      const response = await fetch(`https://api.spotify.com/v1/artists/${id}/albums?include_groups=album&market=US`, {
+      const data: ArtistAlbumListResponse = await fetchUtil({
+        path: `/artists/${id}/albums`,
+        configProps: {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${Cookies.get('token')}`
-          }
-        })
-      const data: ArtistAlbumListResponse = await response.json();
+        },
+        queryParams: {
+          include_groups: 'album',
+        }
+      })
       const albumIds = data.items.map(artistAlbum => artistAlbum.id);
 
       await fetchAlbumsWithTracks(id, albumIds);
@@ -162,21 +163,15 @@ import type { SingleTrack } from "src/types/tracks";
 
       // }
     } else {
-      const params = new URLSearchParams({
-        ids: albumIds.join(','),
-        market: 'US',
-      });
-      const url = new URL('https://api.spotify.com/v1/albums');
-      url.search = params.toString();
-
-      const albums = await fetch(String(url), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`
+      const data = await fetchUtil({
+        path: '/albums',
+        configProps: {
+          method: 'GET',
+        },
+        queryParams: {
+          ids: albumIds.join(','),
         }
       })
-      const data = await albums.json();
-
       // TODO: Fix pushing to array
       // artistAlbums[artistId] = data.albums;
 

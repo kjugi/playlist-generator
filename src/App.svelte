@@ -6,6 +6,7 @@
   import SearchLogic from './lib/SearchLogic.svelte';
   import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
   import GenerateType from './lib/GenerateType.svelte';
+  import { fetchUtil } from './utils/fetchUtil';
   import { PlaylistType as PlaylistEnum } from './types/playlist';
 
   import type { SingleArtist } from './types/artists';
@@ -61,14 +62,12 @@
     isLoading = true;
 
     try {
-      const response = await fetch('https://api.spotify.com/v1/me', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('token')}`
+      const data = await fetchUtil({
+        path: '/me',
+        configProps: {
+          method: 'GET',
         }
-      })
-      const data = await response.json();
-
+      });
       userData.name = data.display_name;
       userData.image = data.images[0].url || '';
       userData.id = data.id
