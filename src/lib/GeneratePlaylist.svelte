@@ -29,7 +29,7 @@ import type { SingleTrack } from "src/types/tracks";
   }
   let tracks: SingleTrack[] = [];
 
-  let songsPerArtist = 0;
+  let songsPerArtist = '';
   let playlistName = '';
   let isError = false;
   let errorMessage = '';
@@ -192,7 +192,7 @@ import type { SingleTrack } from "src/types/tracks";
 
   {#if playlistType !== PlaylistEnum.TOPSONGS}
     <label for="songsPerArtist">
-      Max tracks per artists
+      Max tracks per artists (0 equals all)
     </label>
     <input
       type="text"
@@ -207,7 +207,7 @@ import type { SingleTrack } from "src/types/tracks";
       disabled={
         selectedArtists.length === 0 ||
         playlistName.length === 0 ||
-        !Boolean(songsPerArtist) ||
+        songsPerArtist === '' ||
         isLoading
       }
       on:click={generatePlaylist}
