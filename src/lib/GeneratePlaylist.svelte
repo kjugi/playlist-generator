@@ -23,10 +23,10 @@ import type { SingleTrack } from "src/types/tracks";
 
   let artistAlbums: {
     [key: string]: SingleAlbum[];
-  };
+  } = {};
   let albumTracks: {
     [key: string]: SingleTrack[];
-  }
+  } = {};
   let tracks: SingleTrack[] = [];
 
   let songsPerArtist = '';
@@ -166,11 +166,27 @@ import type { SingleTrack } from "src/types/tracks";
           ids: albumIds.join(','),
         }
       })
-      // TODO: Fix pushing to array
-      // artistAlbums[artistId] = data.albums;
 
-      const tracksId = data.albums.flatMap(album => album.tracks.items).map(track => track.id)
-      // TODO: Do the same thing as we are doing with albums and request them in loop
+      artistAlbums[artistId] = albums;
+      // TODO: Add custom rating by album.popularity field.
+      // Calculace the song ratio on playlist together with songsPerArtist
+      albumTracks = albums
+        .reduce((acc, album) => {
+          const tracks = album.tracks.items
+            .map(track => track.id)
+            .sort(() => 0.5 - Math.random());
+
+          if (songsPerArtist !== '0') {
+            tracks.splice(Number(songsPerArtist))
+          }
+          return {
+            ...acc,
+            [album.id]: {
+              tracks,
+              popularity: album.popularity,
+            }
+          }
+        }, {});
     }
   }
 
