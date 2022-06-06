@@ -1,4 +1,6 @@
 <script lang="ts">
+import styles from '../css/global.module.css';
+
 import type { PlaylistType } from "src/types/playlist";
 
   export let step: number;
@@ -41,6 +43,7 @@ import type { PlaylistType } from "src/types/playlist";
   <div class="actions">
     <button
       type="button"
+      class={styles.primary}
       on:click={() => {
         step++
       }}
@@ -49,6 +52,7 @@ import type { PlaylistType } from "src/types/playlist";
     </button>
     <button
       type="button"
+      class={styles.secondary}
       on:click={() => {
         step--
       }}

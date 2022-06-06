@@ -1,6 +1,7 @@
 <script lang="ts">
 import { fetchUtil } from "src/utils/fetchUtil";
 import { PlaylistType as PlaylistEnum } from "../types/playlist";
+import styles from '../css/global.module.css';
 
 import type {
   SingleAlbum,
@@ -220,6 +221,7 @@ import type { SingleTrack } from "src/types/tracks";
   <div class="actions">
     <button
       type="button"
+      class={styles.primary}
       disabled={
         selectedArtists.length === 0 ||
         playlistName.length === 0 ||
@@ -232,6 +234,7 @@ import type { SingleTrack } from "src/types/tracks";
     </button>
     <button
       type="button"
+      class={styles.secondary}
       on:click={() => {
         step--
       }}

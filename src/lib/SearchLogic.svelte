@@ -1,5 +1,6 @@
 <script lang="ts">
   import Cookies from 'js-cookie';
+  import styles from '../css/global.module.css';
   import type { SearchArtistResponse, SingleArtist } from 'src/types/artists';
 
   export let artists: SingleArtist[];
@@ -74,6 +75,7 @@
 
         <button
           type="button"
+          class={styles.primary}
           disabled={!!selectedArtists.find(el => el.id === artist.id)}
           on:click={() => selectArtist(artist)}
         >
@@ -100,6 +102,7 @@
 
         <button
           type="button"
+          class={styles.secondary}
           on:click={() => filterOutArtist(artist)}
         >
           Remove artist
@@ -115,6 +118,7 @@
   {/if}
   <button
     type="button"
+    class={styles.primary}
     disabled={selectedArtists.length < 2}
     on:click={() => step++}
   >
