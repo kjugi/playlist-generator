@@ -1,26 +1,24 @@
-import type { SingleArtist } from "./artists";
+type SimpleTrackItem = {
+  id: string;
+  explicit: boolean;
+  href: string;
+  name: string;
+  track_number: string;
+}
 
 export type SingleAlbum = {
-  album_group: string;
-  album_type: string;
-  artists: SingleArtist[];
-  external_urls: {
-    spotify: string;
-  };
+  available_markets: Array<string>;
   id: string;
-  images: {
-    url: string;
-  }[];
   name: string;
   release_date: string;
-  type: string;
-};
+  tracks: {
+    items: Array<SimpleTrackItem>;
+    total: number;
+  }
+  total_tracks: number;
+  popularity: number;
+}
 
-export type ArtistAlbumListResponse = {
-  items: SingleAlbum[];
-  limit: number;
-  next: string | null;
-  offset: number;
-  previous: string | null;
-  total: number;
-};
+export type SeveralAlbumsResponse = {
+  albums: Array<SingleAlbum>;
+}

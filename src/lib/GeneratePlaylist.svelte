@@ -2,8 +2,14 @@
 import { fetchUtil } from "src/utils/fetchUtil";
 import { PlaylistType as PlaylistEnum } from "../types/playlist";
 
-import type { ArtistAlbumListResponse, SingleAlbum } from "src/types/albums";
-import type { SingleArtist } from "src/types/artists";
+import type {
+  SingleAlbum,
+  SeveralAlbumsResponse
+} from "src/types/albums";
+import type {
+  SingleArtist,
+  ArtistAlbumListResponse,
+ } from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
 import type { SingleTrack } from "src/types/tracks";
 
@@ -149,7 +155,9 @@ import type { SingleTrack } from "src/types/tracks";
 
       // }
     } else {
-      const data = await fetchUtil({
+      const {
+        albums
+      } = await fetchUtil<SeveralAlbumsResponse>({
         path: '/albums',
         configProps: {
           method: 'GET',

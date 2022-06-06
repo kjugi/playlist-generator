@@ -1,3 +1,20 @@
+
+export type SingleArtistAlbum = {
+  album_group: string;
+  album_type: string;
+  artists: SingleArtist[];
+  external_urls: {
+    spotify: string;
+  };
+  id: string;
+  images: {
+    url: string;
+  }[];
+  name: string;
+  release_date: string;
+  type: string;
+};
+
 export type SingleArtist = {
   external_urls: {
     spotify: string;
@@ -22,3 +39,12 @@ export type SearchArtistResponse = {
     total: number;
   }
 }
+
+export type ArtistAlbumListResponse = {
+  items: SingleArtistAlbum[];
+  limit: number;
+  next: string | null;
+  offset: number;
+  previous: string | null;
+  total: number;
+};
