@@ -150,12 +150,17 @@ import type { SingleTrack } from "src/types/tracks";
   }
 
   const fetchAlbumsWithTracks = async (artistId: string, albumIds: string[]) => {
-    if (Math.ceil(albumIds.length / 20) > 1){
-      // TOOD: Create unified solution for asking for resources in loop
-      // for (let n = 0; n < Math.floor(albumIds.length / 20); n++) {
+    const albumsReduced = albumIds.reduce<Array<Array<string>>>((acc, albumId, index) => {
+      if (index % 20 || index === 1) {
+        acc[acc.length - 1].push(albumId);
+      } else {
+        acc.push([albumId]);
+      }
 
-      // }
-    } else {
+      return acc;
+    }, []);
+
+    for (let n = 0; n < albumsReduced.length; n++) {
       const {
         albums
       } = await fetchUtil<SeveralAlbumsResponse>({
@@ -164,15 +169,20 @@ import type { SingleTrack } from "src/types/tracks";
           method: 'GET',
         },
         queryParams: {
-          ids: albumIds.join(','),
+          ids: albumsReduced[n].join(','),
         }
       })
 
-      artistAlbums[artistId] = albums;
+      if (!artistAlbums[artistId]) {
+        artistAlbums[artistId] = [];
+      }
+
+      artistAlbums[artistId].push(...albums)
       // TODO: Add custom rating by album.popularity field.
       // Calculace the song ratio on playlist together with songsPerArtist
-      albumTracks = albums
-        .reduce((acc, album) => {
+      albumTracks = {
+        ...albumTracks,
+        ...albums.reduce((acc, album) => {
           const tracks = album.tracks.items
             .map(track => track.id)
             .sort(() => 0.5 - Math.random());
@@ -187,8 +197,10 @@ import type { SingleTrack } from "src/types/tracks";
               popularity: album.popularity,
             }
           }
-        }, {});
+        }, {})
+      }
     }
+    // TODO: Trigger playlist create method
   }
 
 </script>
