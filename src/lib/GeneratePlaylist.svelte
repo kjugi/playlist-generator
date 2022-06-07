@@ -58,6 +58,14 @@ import type { SingleTrack } from "src/types/tracks";
     }
   }
 
+  const resetBindedFields = () => {
+    playlistName = '';
+    songsPerArtist = '';
+    tracks = [];
+    artistAlbums = {};
+    albumTracks = {};
+  }
+
   const createSpotifyPlaylist = async () => {
     try {
       const playlistData: {
@@ -84,13 +92,12 @@ import type { SingleTrack } from "src/types/tracks";
         },
       });
     } catch (err) {
+      // TODO: Show real error
       isError = true;
     } finally {
-      playlistName = '';
-      tracks = [];
-      isLoading = false;
-      // TODO: Add success page
+      resetBindedFields();
       step = 0;
+      isLoading = false;
     }
   }
 
