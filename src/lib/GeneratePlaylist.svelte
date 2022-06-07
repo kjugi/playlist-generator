@@ -102,8 +102,8 @@ import type { SingleTrack } from "src/types/tracks";
   }
 
   const generateFromTopSongs = async () => {
-    try {
-      for (let i = 0; i < selectedArtists.length; i++) {
+    for (let i = 0; i < selectedArtists.length; i++) {
+      try {
         const artistId = selectedArtists[i].id;
         const data = await fetchUtil({
           path: `/artists/${artistId}/top-tracks`,
@@ -113,27 +113,24 @@ import type { SingleTrack } from "src/types/tracks";
         });
 
         tracks.push(...data.tracks);
+      } catch (err) {
+        // TODO: Show real error
+        isError = true;
       }
-
-      await createSpotifyPlaylist();
-    } catch (err) {
-      isError = true;
     }
+
+    await createSpotifyPlaylist();
   }
 
   const fromPickedArtists = async (
     callback: (id: string, limit: number) => Promise<void>,
     limit?: number
   ) => {
-    try {
-      for (let i = 0; i < selectedArtists.length; i++) {
-        await callback(selectedArtists[i].id, limit);
-      }
-    } catch (err) {
-      isError = true;
-    } finally {
-      isLoading = false;
+    for (let i = 0; i < selectedArtists.length; i++) {
+      await callback(selectedArtists[i].id, limit);
     }
+
+    await createSpotifyPlaylist();
   }
 
   const fetchArtistAlbums = async (id: string, limit?: number) => {
@@ -152,7 +149,11 @@ import type { SingleTrack } from "src/types/tracks";
 
       await fetchAlbumsWithTracks(id, albumIds);
     } catch (err) {
+      // TODO: Show real error
+      // TODO: Throw error to stop for loop
       isError = true;
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -168,48 +169,54 @@ import type { SingleTrack } from "src/types/tracks";
     }, []);
 
     for (let n = 0; n < albumsReduced.length; n++) {
-      const {
-        albums
-      } = await fetchUtil<SeveralAlbumsResponse>({
-        path: '/albums',
-        configProps: {
-          method: 'GET',
-        },
-        queryParams: {
-          ids: albumsReduced[n].join(','),
+      try {
+        const {
+          albums
+        } = await fetchUtil<SeveralAlbumsResponse>({
+          path: '/albums',
+          configProps: {
+            method: 'GET',
+          },
+          queryParams: {
+            ids: albumsReduced[n].join(','),
+          }
+        })
+
+        if (!artistAlbums[artistId]) {
+          artistAlbums[artistId] = [];
         }
-      })
 
-      if (!artistAlbums[artistId]) {
-        artistAlbums[artistId] = [];
-      }
+        artistAlbums[artistId].push(...albums)
+        // TODO: Add custom rating by album.popularity field.
+        // Calculace the song ratio on playlist together with songsPerArtist
+        albumTracks = {
+          ...albumTracks,
+          ...albums.reduce((acc, album) => {
+            const tracks = album.tracks.items
+              .map(track => track.id)
+              .sort(() => 0.5 - Math.random());
 
-      artistAlbums[artistId].push(...albums)
-      // TODO: Add custom rating by album.popularity field.
-      // Calculace the song ratio on playlist together with songsPerArtist
-      albumTracks = {
-        ...albumTracks,
-        ...albums.reduce((acc, album) => {
-          const tracks = album.tracks.items
-            .map(track => track.id)
-            .sort(() => 0.5 - Math.random());
-
-          if (songsPerArtist !== '0') {
-            tracks.splice(Number(songsPerArtist))
-          }
-          return {
-            ...acc,
-            [album.id]: {
-              tracks,
-              popularity: album.popularity,
+            if (songsPerArtist !== '0') {
+              tracks.splice(Number(songsPerArtist))
             }
-          }
-        }, {})
+            return {
+              ...acc,
+              [album.id]: {
+                tracks,
+                popularity: album.popularity,
+              }
+            }
+          }, {})
+        }
+      } catch (error) {
+        // TODO: Show real error
+        // TODO: Throw error to stop for loop
+        isError = true;
+      } finally {
+        isLoading = false;
       }
     }
-    // TODO: Trigger playlist create method
   }
-
 </script>
 
 <div>
