@@ -6,7 +6,7 @@
   import SearchLogic from './lib/SearchLogic.svelte';
   import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
   import GenerateType from './lib/GenerateType.svelte';
-  import { fetchUtil } from './utils/fetchUtil';
+  import { ErrorCode, fetchUtil, type ErrorType } from './utils/fetchUtil';
   import { PlaylistType as PlaylistEnum } from './types/playlist';
   import styles from './css/global.module.css';
 
@@ -15,6 +15,8 @@
 
   let isLogged: boolean = false;
   let isLoading: boolean = false;
+  let isError: boolean = false;
+  let errorData: ErrorType | null = null;
   let userData = {
     name: '',
     image: '',
@@ -133,6 +135,21 @@
           </p>
         </div>
       {/if}
+    {/if}
+    {#if isError && errorData}
+      <div>
+        <p>
+          We have catched an error
+        </p>
+        {#if errorData.error.status === ErrorCode.AuthError}
+          <p>
+            You can try again after login again
+          </p>
+          <button>
+            Reload app
+          </button>
+        {/if}
+      </div>
     {/if}
   </div>
 </main>

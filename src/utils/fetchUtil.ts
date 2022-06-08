@@ -11,30 +11,53 @@ export type FetchUtilProps = {
   baseUrl?: string;
 }
 
+export enum ErrorCode {
+  GeneralError = 400,
+  ExpiredATokenError = 401,
+  AuthError = 403,
+  NotFoundError = 404,
+  RateLimitError = 429,
+  ServerError = 500,
+}
+
+export type ErrorType = {
+  error: {
+    status: ErrorCode;
+    message: string;
+  }
+}
+
 export const fetchUtil = async <T = any>({
   path,
   configProps,
   queryParams,
   baseUrl = 'https://api.spotify.com/v1/',
 }: FetchUtilProps): Promise<T> => {
-  try {
-    const params = new URLSearchParams({
-      market: 'US',
-      ...queryParams,
-    });
-    const urlObject = new URL(
-      `${baseUrl}${(path[0] === '/') ? path.substring(1) : path}`
-    );
-    urlObject.search = params.toString();
+  const params = new URLSearchParams({
+    market: 'US',
+    ...queryParams,
+  });
+  const urlObject = new URL(
+    `${baseUrl}${(path[0] === '/') ? path.substring(1) : path}`
+  );
+  urlObject.search = params.toString();
 
-    const requestFetch = await fetch(urlObject.href, {
-      ...configProps,
-      headers: {
-        'Authorization': `Bearer ${Cookies.get('token')}`
-      },
-    })
-    return await requestFetch.json();
-  } catch (err) {
-    return err;
+  const requestFetch = await fetch(urlObject.href, {
+    ...configProps,
+    headers: {
+      'Authorization': `Bearer ${Cookies.get('token')}`
+    },
+  });
+
+  const jsonResponse = await requestFetch.json();
+
+  if (
+    !requestFetch.ok ||
+    requestFetch.status in ErrorCode ||
+    requestFetch.status !== 200
+  ) {
+    throw jsonResponse as ErrorType;
   }
+
+  return jsonResponse as T;
 }

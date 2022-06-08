@@ -13,6 +13,7 @@ import type {
  } from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
 import type { SingleTrack } from "src/types/tracks";
+import { isKnownError } from "src/utils/errorHandling";
 
   export let selectedArtists: SingleArtist[];
   export let step: number;
@@ -116,6 +117,7 @@ import type { SingleTrack } from "src/types/tracks";
       } catch (err) {
         // TODO: Show real error
         isError = true;
+        break;
       }
     }
 
@@ -135,7 +137,7 @@ import type { SingleTrack } from "src/types/tracks";
 
   const fetchArtistAlbums = async (id: string, limit?: number) => {
     try {
-      const data: ArtistAlbumListResponse = await fetchUtil({
+      const data = await fetchUtil<ArtistAlbumListResponse>({
         path: `/artists/${id}/albums`,
         configProps: {
           method: 'GET',
@@ -144,14 +146,15 @@ import type { SingleTrack } from "src/types/tracks";
           include_groups: 'album',
           limit: limit || 20,
         }
-      })
+      });
       const albumIds = data.items.map(artistAlbum => artistAlbum.id);
 
       await fetchAlbumsWithTracks(id, albumIds);
     } catch (err) {
       // TODO: Show real error
-      // TODO: Throw error to stop for loop
       isError = true;
+      // TODO: Throw error to stop for loop
+      // break;
     } finally {
       isLoading = false;
     }
@@ -210,8 +213,8 @@ import type { SingleTrack } from "src/types/tracks";
         }
       } catch (error) {
         // TODO: Show real error
-        // TODO: Throw error to stop for loop
         isError = true;
+        break;
       } finally {
         isLoading = false;
       }
