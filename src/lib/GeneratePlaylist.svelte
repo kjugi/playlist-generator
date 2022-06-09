@@ -13,7 +13,6 @@ import type {
  } from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
 import type { SingleTrack } from "src/types/tracks";
-import { isKnownError } from "src/utils/errorHandling";
 
   export let selectedArtists: SingleArtist[];
   export let step: number;

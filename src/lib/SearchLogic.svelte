@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Cookies from 'js-cookie';
   import styles from '../css/global.module.css';
   import type { SearchArtistResponse, SingleArtist } from 'src/types/artists';
 

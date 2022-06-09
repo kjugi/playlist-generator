@@ -14,7 +14,7 @@ export const handleError = (err: unknown) => {
     returnedError = {
       error: {
         status: ErrorCode.ServerError,
-        message: JSON.stringify(err)
+        message: `Raw error message: "${JSON.stringify(err)}"`
       }
     }
   }
