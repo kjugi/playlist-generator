@@ -118,6 +118,8 @@
           bind:artists
           bind:selectedArtists
           bind:isLoading
+          bind:isError
+          bind:errorData
         />
       {/if}
 

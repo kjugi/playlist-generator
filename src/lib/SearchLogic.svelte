@@ -1,35 +1,39 @@
 <script lang="ts">
   import styles from '../css/global.module.css';
   import type { SearchArtistResponse, SingleArtist } from 'src/types/artists';
+  import { fetchUtil, type ErrorType } from 'src/utils/fetchUtil';
+  import { handleError } from 'src/utils/errorHandling';
 
   export let artists: SingleArtist[];
   export let selectedArtists: SingleArtist[];
   export let step: number;
   export let isLoading: boolean;
+  export let isError: boolean;
+  export let errorData: ErrorType | null;
 
   const searchArtist = async (e: Event & {
     currentTarget: EventTarget & HTMLInputElement;
   }) => {
     try {
-      const params = new URLSearchParams({
-        q: e.currentTarget.value,
-        type: 'artist',
-      });
-      const url = new URL('https://api.spotify.com/v1/search');
-      url.search = params.toString();
+      isLoading = true;
 
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Bearer ${Cookies.get('token')}`
+      const data = await fetchUtil<SearchArtistResponse>({
+        path: '/search',
+        configProps: {
+          method: 'GET',
+        },
+        queryParams: {
+          q: e.currentTarget.value,
+          type: 'artist',
         }
-      })
-      const data: SearchArtistResponse = await response.json();
+      });
 
       artists = data.artists.items;
     } catch (err) {
-      console.log(err);
+      // TODO: Watch for changes in errorData to set the isError in App.svelte
+      // Like useEffect
+      isError = true;
+      errorData = handleError(err);
     } finally {
       isLoading = false;
     }
