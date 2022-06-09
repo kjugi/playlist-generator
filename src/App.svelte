@@ -52,8 +52,7 @@
     } else if (Cookies.get('token') && !params.error) {
       isLogged = true
     } else {
-      Cookies.remove('token');
-      isLogged = false;
+      logout();
     }
 
     if (isLogged) {
@@ -81,6 +80,18 @@
       isLoading = false;
     }
   }
+
+  const logout = () => {
+    Cookies.remove('token');
+    isLogged = false;
+    isError = false;
+    errorData = null;
+  }
+
+  const reloadApp = () => {
+    logout();
+    window.location.replace(window.location.pathname);
+  }
 </script>
 
 <main>
@@ -90,7 +101,7 @@
       <div class="login-wrapper">
         <LoginButton isLogged={isLogged} />
       </div>
-    {:else}
+    {:else if isLogged && !isError}
       {#if step === 0}
         <button
           type="button"
@@ -127,25 +138,27 @@
           bind:userData
         />
       {/if}
-
-      {#if isLoading}
-        <div class="global-loader">
-          <p>
-            Loading data...
-          </p>
-        </div>
-      {/if}
+    {/if}
+    {#if isLoading}
+      <div class="global-loader">
+        <p>
+          Loading data...
+        </p>
+      </div>
     {/if}
     {#if isError && errorData}
       <div>
         <p>
           We have catched an error
         </p>
-        {#if errorData.error.status === ErrorCode.AuthError}
+        {#if errorData.error.status === ErrorCode.ExpiredATokenError}
           <p>
             You can try again after login again
           </p>
-          <button>
+          <button
+            class={styles.secondary}
+            on:click={reloadApp}
+          >
             Reload app
           </button>
         {/if}
