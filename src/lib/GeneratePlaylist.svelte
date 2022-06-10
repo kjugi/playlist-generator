@@ -1,5 +1,6 @@
 <script lang="ts">
-import { fetchUtil } from "src/utils/fetchUtil";
+import { fetchUtil, type ErrorType } from "src/utils/fetchUtil";
+import { handleError } from "src/utils/errorHandling";
 import { PlaylistType as PlaylistEnum } from "../types/playlist";
 import styles from '../css/global.module.css';
 
@@ -21,6 +22,7 @@ import type { SingleTrack } from "src/types/tracks";
   export let userData: {
     id: string;
   }
+  export let errorData: ErrorType | null;;
 
   let artistAlbums: {
     [key: string]: SingleAlbum[];
@@ -32,8 +34,6 @@ import type { SingleTrack } from "src/types/tracks";
 
   let songsPerArtist = '';
   let playlistName = '';
-  let isError = false;
-  let errorMessage = '';
 
   const generatePlaylist = async () => {
     isLoading = true;
@@ -92,8 +92,10 @@ import type { SingleTrack } from "src/types/tracks";
         },
       });
     } catch (err) {
-      // TODO: Show real error
-      isError = true;
+      errorData = handleError(
+        err,
+        'Error occured when creating your playlist: '
+      );
     } finally {
       resetBindedFields();
       step = 0;
@@ -114,8 +116,10 @@ import type { SingleTrack } from "src/types/tracks";
 
         tracks.push(...data.tracks);
       } catch (err) {
-        // TODO: Show real error
-        isError = true;
+        errorData = handleError(
+          err,
+          'Error occured during top tracks fetch: '
+        );
         break;
       }
     }
@@ -124,20 +128,20 @@ import type { SingleTrack } from "src/types/tracks";
   }
 
   const fromPickedArtists = async (
-    callback: (id: string, limit: number) => Promise<void>,
+    callback: (artist: SingleArtist, limit: number) => Promise<void>,
     limit?: number
   ) => {
     for (let i = 0; i < selectedArtists.length; i++) {
-      await callback(selectedArtists[i].id, limit);
+      await callback(selectedArtists[i], limit);
     }
 
     await createSpotifyPlaylist();
   }
 
-  const fetchArtistAlbums = async (id: string, limit?: number) => {
+  const fetchArtistAlbums = async (artist: SingleArtist, limit?: number) => {
     try {
       const data = await fetchUtil<ArtistAlbumListResponse>({
-        path: `/artists/${id}/albums`,
+        path: `/artists/${artist.id}/albums`,
         configProps: {
           method: 'GET',
         },
@@ -148,18 +152,23 @@ import type { SingleTrack } from "src/types/tracks";
       });
       const albumIds = data.items.map(artistAlbum => artistAlbum.id);
 
-      await fetchAlbumsWithTracks(id, albumIds);
+      await fetchAlbumsWithTracks(artist.id, albumIds);
     } catch (err) {
-      // TODO: Show real error
-      isError = true;
-      // TODO: Throw error to stop for loop
-      // break;
+      const artistName = artist.name ? `"${artist.name}"` : 'artist';
+
+      errorData = handleError(
+        err,
+        `Error occured during ${artistName} albums fetch: `
+      );
+
+      throw new Error(errorData.error.message);
     } finally {
       isLoading = false;
     }
   }
 
   const fetchAlbumsWithTracks = async (artistId: string, albumIds: string[]) => {
+    // API accepts max 20 albums at single call so we have to split it for separate arrays
     const albumsReduced = albumIds.reduce<Array<Array<string>>>((acc, albumId, index) => {
       if (index % 20 || index === 1) {
         acc[acc.length - 1].push(albumId);
@@ -210,9 +219,11 @@ import type { SingleTrack } from "src/types/tracks";
             }
           }, {})
         }
-      } catch (error) {
-        // TODO: Show real error
-        isError = true;
+      } catch (err) {
+        errorData = handleError(
+          err,
+          'Error occured during albums tracks fetch: '
+        );
         break;
       } finally {
         isLoading = false;

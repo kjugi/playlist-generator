@@ -12,7 +12,7 @@ export const handleError = (err: unknown, customMessage?: string) => {
       ...err,
       error: {
         ...err.error,
-        message: `${customMessage ? `${customMessage}: ` : ''}${err.error.message}`
+        message: `${customMessage || ''}${err.error.message}`
       }
     };
   }

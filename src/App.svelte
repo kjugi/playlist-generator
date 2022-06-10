@@ -148,6 +148,7 @@
           bind:isLoading
           bind:playlistType
           bind:userData
+          bind:errorData
         />
       {/if}
     {/if}
