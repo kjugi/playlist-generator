@@ -7,6 +7,7 @@
   import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
   import GenerateType from './lib/GenerateType.svelte';
   import { ErrorCode, fetchUtil, type ErrorType } from './utils/fetchUtil';
+  import { handleError } from './utils/errorHandling';
   import { PlaylistType as PlaylistEnum } from './types/playlist';
   import styles from './css/global.module.css';
 
@@ -77,7 +78,13 @@
       userData.image = data.images[0].url || '';
       userData.id = data.id
     } catch (err) {
-      // TODO: Add global catch for 404 and run logout
+      const localError = handleError(err);
+
+      if (localError.error.status === ErrorCode.ExpiredATokenError) {
+        reloadApp();
+      } else {
+        errorData = localError;
+      }
       console.log(err);
     } finally {
       isLoading = false;
