@@ -101,13 +101,14 @@
   <div class="content">
     {#if !isLogged}
       <div class="login-wrapper">
-        <LoginButton isLogged={isLogged} />
+        <LoginButton />
       </div>
     {:else if isLogged && !isError}
       {#if step === 0}
         <button
           type="button"
           class={styles.primary}
+          disabled={isLoading}
           on:click={() => step++}
         >
           Start new playlist!

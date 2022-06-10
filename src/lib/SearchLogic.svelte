@@ -48,7 +48,12 @@
   <label for="search">
     Search for artists and pick them
   </label>
-  <input type="text" name="search" on:change={e => searchArtist(e)} />
+  <input
+    type="text"
+    name="search"
+    disabled={isLoading}
+    on:change={e => searchArtist(e)}
+  />
 
   <div class="results">
     {#each artists as artist}
@@ -75,7 +80,10 @@
         <button
           type="button"
           class={styles.primary}
-          disabled={!!selectedArtists.find(el => el.id === artist.id)}
+          disabled={
+            !!selectedArtists.find(el => el.id === artist.id) ||
+            isLoading
+          }
           on:click={() => selectArtist(artist)}
         >
           Select artist
@@ -102,6 +110,7 @@
         <button
           type="button"
           class={styles.secondary}
+          disabled={isLoading}
           on:click={() => filterOutArtist(artist)}
         >
           Remove artist
@@ -118,7 +127,7 @@
   <button
     type="button"
     class={styles.primary}
-    disabled={selectedArtists.length < 2}
+    disabled={selectedArtists.length < 2 || isLoading}
     on:click={() => step++}
   >
     Go to next step

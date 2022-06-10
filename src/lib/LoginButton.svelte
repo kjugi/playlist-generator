@@ -1,8 +1,6 @@
 <script lang="ts">
   import styles from '../css/global.module.css';
 
-  export let isLogged: boolean;
-
   const runLoginAction = async () => {
     const baseUrl = 'https://accounts.spotify.com/authorize';
     const params = new URLSearchParams({

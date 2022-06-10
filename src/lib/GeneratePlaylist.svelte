@@ -232,6 +232,7 @@ import type { SingleTrack } from "src/types/tracks";
   <input
     type="text"
     name="playlistName"
+    disabled={isLoading}
     bind:value={playlistName}
   />
 
@@ -242,6 +243,7 @@ import type { SingleTrack } from "src/types/tracks";
     <input
       type="text"
       name="songsPerArtist"
+      disabled={isLoading}
       bind:value={songsPerArtist}
     />
   {/if}
@@ -263,6 +265,7 @@ import type { SingleTrack } from "src/types/tracks";
     <button
       type="button"
       class={styles.secondary}
+      disabled={isLoading}
       on:click={() => {
         step--
       }}
