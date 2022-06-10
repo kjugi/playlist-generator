@@ -8,7 +8,6 @@
   export let selectedArtists: SingleArtist[];
   export let step: number;
   export let isLoading: boolean;
-  export let isError: boolean;
   export let errorData: ErrorType | null;
 
   const searchArtist = async (e: Event & {
@@ -30,9 +29,6 @@
 
       artists = data.artists.items;
     } catch (err) {
-      // TODO: Watch for changes in errorData to set the isError in App.svelte
-      // Like useEffect
-      isError = true;
       errorData = handleError(err);
     } finally {
       isLoading = false;

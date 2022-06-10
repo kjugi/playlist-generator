@@ -26,6 +26,9 @@
   let artists: SingleArtist[] = [];
   let selectedArtists: SingleArtist[] = [];
   let playlistType: PlaylistType = PlaylistEnum.TOPSONGS;
+  $: {
+    errorData ? isError = true : isError = false;
+  }
 
   onMount(async () => {
     const params: { [key: string]: string | number } = window.location.hash
@@ -84,7 +87,6 @@
   const logout = () => {
     Cookies.remove('token');
     isLogged = false;
-    isError = false;
     errorData = null;
   }
 
@@ -118,7 +120,6 @@
           bind:artists
           bind:selectedArtists
           bind:isLoading
-          bind:isError
           bind:errorData
         />
       {/if}
