@@ -1,14 +1,20 @@
 import { ErrorCode, type ErrorType } from "./fetchUtil";
 
 export const isKnownError = (errObject: unknown): errObject is ErrorType => {
-  return (errObject as ErrorType).error.status !== undefined;
+  return (errObject as ErrorType).error?.status !== undefined;
 }
 
-export const handleError = (err: unknown) => {
+export const handleError = (err: unknown, customMessage?: string) => {
   let returnedError: ErrorType;
 
   if (isKnownError(err)) {
-    returnedError = err;
+    returnedError = {
+      ...err,
+      error: {
+        ...err.error,
+        message: `${customMessage ? `${customMessage}: ` : ''}${err.error.message}`
+      }
+    };
   }
   else {
     returnedError = {
