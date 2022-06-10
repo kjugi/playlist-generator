@@ -90,6 +90,14 @@
     errorData = null;
   }
 
+  const resetCreator = () => {
+    errorData = null;
+    isLoading = false;
+    step = 0;
+    artists = [];
+    selectedArtists = [];
+  }
+
   const reloadApp = () => {
     logout();
     window.location.replace(window.location.pathname);
@@ -165,6 +173,13 @@
           >
             Reload app
           </button>
+        {:else}
+        <button
+          class={styles.primary}
+          on:click={resetCreator}
+        >
+          Try again
+        </button>
         {/if}
       </div>
     {/if}
