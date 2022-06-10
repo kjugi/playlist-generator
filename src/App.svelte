@@ -162,8 +162,14 @@
     {#if isError && errorData}
       <div>
         <p>
-          We have catched an error
+          We have catched an error:
         </p>
+        <p>
+          Message:
+        </p>
+        <code>
+          {errorData.error.message}
+        </code>
         {#if errorData.error.status === ErrorCode.ExpiredATokenError}
           <p>
             You can try again after login again
