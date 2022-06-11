@@ -22,7 +22,7 @@ import type { SingleTrack } from "src/types/tracks";
   export let userData: {
     id: string;
   }
-  export let errorData: ErrorType | null;;
+  export let errorData: ErrorType | null;
 
   let artistAlbums: {
     [key: string]: SingleAlbum[];

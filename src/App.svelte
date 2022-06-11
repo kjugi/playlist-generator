@@ -3,6 +3,7 @@
   import Cookies from 'js-cookie';
   import LoginButton from './lib/LoginButton.svelte'
   import Header from './lib/Header.svelte';
+  import Error from './lib/Error.svelte';
   import SearchLogic from './lib/SearchLogic.svelte';
   import GeneratePlaylist from './lib/GeneratePlaylist.svelte';
   import GenerateType from './lib/GenerateType.svelte';
@@ -85,7 +86,6 @@
       } else {
         errorData = localError;
       }
-      console.log(err);
     } finally {
       isLoading = false;
     }
@@ -166,37 +166,12 @@
         </p>
       </div>
     {/if}
-    {#if isError && errorData}
-      <div>
-        <p>
-          We have catched an error:
-        </p>
-        <p>
-          Message:
-        </p>
-        <code>
-          {errorData.error.message}
-        </code>
-        {#if errorData.error.status === ErrorCode.ExpiredATokenError}
-          <p>
-            You can try again after login again
-          </p>
-          <button
-            class={styles.secondary}
-            on:click={reloadApp}
-          >
-            Reload app
-          </button>
-        {:else}
-        <button
-          class={styles.primary}
-          on:click={resetCreator}
-        >
-          Try again
-        </button>
-        {/if}
-      </div>
-    {/if}
+    <Error
+      bind:isError
+      bind:errorData
+      on:reloadApp={reloadApp}
+      on:resetCreator={resetCreator}
+    />
   </div>
 </main>
 
