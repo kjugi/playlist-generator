@@ -53,8 +53,7 @@ export const fetchUtil = async <T = any>({
 
   if (
     !requestFetch.ok ||
-    requestFetch.status in ErrorCode ||
-    requestFetch.status !== 200
+    requestFetch.status in ErrorCode
   ) {
     throw jsonResponse as ErrorType;
   }

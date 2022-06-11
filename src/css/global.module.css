@@ -38,6 +38,10 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  opacity: 0.5;
+}
+
 button.primary {
   min-width: 200px;
   padding: 12px 24px;

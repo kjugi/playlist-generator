@@ -19,7 +19,7 @@
     </span>
   </div>
   {#if isLogged}
-    <div>
+    <div class="user-section">
       <p>
         Hi, {userData.name}
       </p>
@@ -87,6 +87,10 @@
     border: none;
     color: var(--white-color);
     cursor: pointer;
+  }
+
+  .user-section {
+    display: flex;
   }
 
   .menu-trigger {

@@ -120,7 +120,8 @@ import type { SingleTrack } from "src/types/tracks";
           err,
           'Error occured during top tracks fetch: '
         );
-        break;
+
+        throw new Error(errorData.error.message);
       }
     }
 
@@ -224,7 +225,7 @@ import type { SingleTrack } from "src/types/tracks";
           err,
           'Error occured during albums tracks fetch: '
         );
-        break;
+        throw new Error(errorData.error.message);
       } finally {
         isLoading = false;
       }
@@ -264,9 +265,9 @@ import type { SingleTrack } from "src/types/tracks";
       type="button"
       class={styles.primary}
       disabled={
+        (playlistType !== PlaylistEnum.TOPSONGS && songsPerArtist === '') ||
         selectedArtists.length === 0 ||
         playlistName.length === 0 ||
-        songsPerArtist === '' ||
         isLoading
       }
       on:click={generatePlaylist}
