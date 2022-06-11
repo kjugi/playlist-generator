@@ -7,6 +7,10 @@ export let errorData: ErrorType | null;
 export let isError: boolean;
 
 const dispatch = createEventDispatcher();
+
+const resetCreator = () => {
+  window.location.reload();
+}
 </script>
 
 {#if isError && errorData}
@@ -31,12 +35,20 @@ const dispatch = createEventDispatcher();
         Reload app
       </button>
     {:else}
-      <button
-        class={styles.primary}
-        on:click={() => dispatch('resetCreator')}
-      >
-        Start again
-      </button>
+      <div>
+        <button
+          class={styles.primary}
+          on:click={resetCreator}
+        >
+          Start again
+        </button>
+        <button
+          class={styles.secondary}
+          on:click={() => dispatch('reloadApp')}
+        >
+          Reload app
+        </button>
+      </div>
     {/if}
   </div>
 {/if}
