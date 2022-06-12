@@ -6,14 +6,16 @@ import styles from '../css/global.module.css';
 
 import type {
   SingleAlbum,
-  SeveralAlbumsResponse
+  SeveralAlbumsResponse,
+  SimpleTrackItem
 } from "src/types/albums";
 import type {
   SingleArtist,
   ArtistAlbumListResponse,
- } from "src/types/artists";
+} from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
 import type { SingleTrack } from "src/types/tracks";
+import { trackRatio } from "src/utils/trackRatio";
 
   export let selectedArtists: SingleArtist[];
   export let step: number;
@@ -24,13 +26,12 @@ import type { SingleTrack } from "src/types/tracks";
   }
   export let errorData: ErrorType | null;
 
+  type ArtistId = string;
+
   let artistAlbums: {
-    [key: string]: SingleAlbum[];
+    [key: ArtistId]: SingleAlbum[];
   } = {};
-  let albumTracks: {
-    [key: string]: SingleTrack[];
-  } = {};
-  let tracks: SingleTrack[] = [];
+  let tracks: SingleTrack[] | SimpleTrackItem[] = [];
 
   let songsPerArtist = '';
   let playlistName = '';
@@ -63,7 +64,6 @@ import type { SingleTrack } from "src/types/tracks";
     songsPerArtist = '';
     tracks = [];
     artistAlbums = {};
-    albumTracks = {};
   }
 
   const createSpotifyPlaylist = async () => {
@@ -136,6 +136,33 @@ import type { SingleTrack } from "src/types/tracks";
       await callback(selectedArtists[i], limit);
     }
 
+    type TrackCountPerAlbum = Array<{
+      artistId: ArtistId;
+      trackCount: number[];
+    }>
+    // TODO: Add real sorting method combined by song popularity and liked/not liked
+    const extractedTracks = Object.values(artistAlbums)
+      .reduce<TrackCountPerAlbum>((prev, albumsData, index) => {
+        return [
+          ...prev,
+          {
+            artistId: Object.keys(artistAlbums)[index],
+            trackCount: trackRatio(
+              Number(songsPerArtist),
+              albumsData.map(single => single.popularity)
+            )
+          }
+        ]
+      }, [])
+      .map(singleAlbum => {
+        const albumsTracks = artistAlbums[singleAlbum.artistId].map(album => album.tracks.items);
+
+        return albumsTracks.map((tracks, index) => tracks.slice(0, singleAlbum.trackCount[index])).flat();
+      })
+      .reduce((prev, current) => ([...prev, ...current]), []);
+
+    tracks = extractedTracks;
+
     await createSpotifyPlaylist();
   }
 
@@ -199,27 +226,6 @@ import type { SingleTrack } from "src/types/tracks";
         }
 
         artistAlbums[artistId].push(...albums)
-        // TODO: Add custom rating by album.popularity field.
-        // Calculace the song ratio on playlist together with songsPerArtist
-        albumTracks = {
-          ...albumTracks,
-          ...albums.reduce((acc, album) => {
-            const tracks = album.tracks.items
-              .map(track => track.id)
-              .sort(() => 0.5 - Math.random());
-
-            if (songsPerArtist !== '0') {
-              tracks.splice(Number(songsPerArtist))
-            }
-            return {
-              ...acc,
-              [album.id]: {
-                tracks,
-                popularity: album.popularity,
-              }
-            }
-          }, {})
-        }
       } catch (err) {
         errorData = handleError(
           err,
