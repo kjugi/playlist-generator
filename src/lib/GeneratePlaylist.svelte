@@ -27,6 +27,10 @@ import { trackRatio } from "src/utils/trackRatio";
   export let errorData: ErrorType | null;
 
   type ArtistId = string;
+  type TrackCountPerAlbum = Array<{
+    artistId: ArtistId;
+    trackCount: number[];
+  }>;
 
   let artistAlbums: {
     [key: ArtistId]: SingleAlbum[];
@@ -136,12 +140,14 @@ import { trackRatio } from "src/utils/trackRatio";
       await callback(selectedArtists[i], limit);
     }
 
-    type TrackCountPerAlbum = Array<{
-      artistId: ArtistId;
-      trackCount: number[];
-    }>
+    tracks = extractTracks();
+
+    await createSpotifyPlaylist();
+  }
+
+  const extractTracks = () => {
     // TODO: Add real sorting method combined by song popularity and liked/not liked
-    const extractedTracks = Object.values(artistAlbums)
+    return Object.values(artistAlbums)
       .reduce<TrackCountPerAlbum>((prev, albumsData, index) => {
         return [
           ...prev,
@@ -160,10 +166,6 @@ import { trackRatio } from "src/utils/trackRatio";
         return albumsTracks.map((tracks, index) => tracks.slice(0, singleAlbum.trackCount[index])).flat();
       })
       .reduce((prev, current) => ([...prev, ...current]), []);
-
-    tracks = extractedTracks;
-
-    await createSpotifyPlaylist();
   }
 
   const fetchArtistAlbums = async (artist: SingleArtist, limit?: number) => {
