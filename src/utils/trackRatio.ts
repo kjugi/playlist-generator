@@ -1,22 +1,21 @@
 /**
- * Psuedocode
+ * Generating how many tracks we can return per artis album
  *
- * Input:
- * - songsPerArtist
- * - Array<albums.popularity>
- * -
+ * @method trackRatio
+ * @prop {number} songsPerAtrist
+ * @prop {Array<number>} albumsPopularity
  *
- * Calculations:
- * 1. Get currentRatio: sum(Array<albums.popularity>)
- * 2. Set new 100% value (totalValue): 100 / currentRatio
- * 3. get percentageValue of songs per album: totalValue * album.popularity
- * 4. convert to songsPerAlbum int value: Round(songsPerArtist * (percentageValue/100) ,2)
- * 5. Add value songsPerAlbum to object with key as albumId
- *
- * Output:
- * - Object{[albumId]: <number>}
+ * @return {Array<number>} Songs per album in same order as albumsPopularity prop
  */
 
-export const trackRatio = () => {
+export const trackRatio = (
+  songsPerArtist: number,
+  albumsPopularity: Array<number>,
+) => {
+  const currentRatio = albumsPopularity.reduce((prev, current) => prev + current, 0);
+  const newPercentageTotal = 100 / currentRatio;
+  const percentagePerAlbum = albumsPopularity.map(singlePopularity => newPercentageTotal * singlePopularity);
+  const songsPerAlbum = percentagePerAlbum.map(value => Math.round(songsPerArtist * (value / 100)));
 
+  return songsPerAlbum
 };
