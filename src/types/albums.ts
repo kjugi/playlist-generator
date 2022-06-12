@@ -1,9 +1,10 @@
-type SimpleTrackItem = {
+export type SimpleTrackItem = {
   id: string;
   explicit: boolean;
   href: string;
   name: string;
   track_number: string;
+  uri: string;
 }
 
 export type SingleAlbum = {
