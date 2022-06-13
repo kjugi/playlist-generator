@@ -246,26 +246,30 @@ import { trackRatio } from "src/utils/trackRatio";
     Select playlist options
   </p>
 
-  <label for="playlistName">
-    Playlist name
-  </label>
-  <input
-    type="text"
-    name="playlistName"
-    disabled={isLoading}
-    bind:value={playlistName}
-  />
-
-  {#if playlistType !== PlaylistEnum.TOPSONGS}
-    <label for="songsPerArtist">
-      Max tracks per artists (0 equals all)
+  <div>
+    <label for="playlistName">
+      Playlist name
     </label>
     <input
       type="text"
-      name="songsPerArtist"
+      name="playlistName"
       disabled={isLoading}
-      bind:value={songsPerArtist}
+      bind:value={playlistName}
     />
+  </div>
+
+  {#if playlistType !== PlaylistEnum.TOPSONGS}
+    <div>
+      <label for="songsPerArtist">
+        Max tracks per artists (0 equals all)
+      </label>
+      <input
+        type="text"
+        name="songsPerArtist"
+        disabled={isLoading}
+        bind:value={songsPerArtist}
+      />
+    </div>
   {/if}
 
   <div class="actions">
