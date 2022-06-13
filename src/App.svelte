@@ -104,7 +104,10 @@
 </script>
 
 <main>
-  <Header isLogged={isLogged} userData={userData} />
+  <Header
+    isLogged={isLogged}
+    userData={userData}
+  />
   <div class="content">
     {#if !isLogged}
       <div class="login-wrapper">
@@ -112,14 +115,23 @@
       </div>
     {:else if isLogged && !isError}
       {#if step === 0}
-        <button
-          type="button"
-          class={styles.primary}
-          disabled={isLoading}
-          on:click={() => step++}
-        >
-          Start new playlist!
-        </button>
+        <div class="initial-step">
+          <button
+            type="button"
+            class={styles.primary}
+            disabled={isLoading}
+            on:click={() => step++}
+          >
+            Start new playlist!
+          </button>
+
+          <p>
+            You are at the beginning of simple playlist generator. You have logged here with your spotify account but I don't store any of your data for my purposes.
+          </p>
+          <p>
+            All data are used to fetch selected things and create playlist with auto picked songs.
+          </p>
+        </div>
       {/if}
 
       {#if step === 1}
@@ -176,6 +188,17 @@
   .login-wrapper {
     display: flex;
     justify-content: center;
+  }
+
+  .initial-step {
+    text-align: center;
+  }
+
+  .global-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
   }
 
   @media (min-width: 480px) {

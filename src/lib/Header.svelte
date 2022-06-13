@@ -5,10 +5,17 @@
   export let userData;
 
   let menuOpened = false;
+
+  const resetCreator = () => {
+    window.location.reload();
+  }
 </script>
 
 <header>
-  <div class="logo-wrapper">
+  <div
+    class="logo-wrapper"
+    on:click={resetCreator}
+  >
     <img
       class="logo"
       src="/logo.png"
@@ -72,6 +79,10 @@
     color: var(--white-color);
   }
 
+  .logo-wrapper {
+    cursor: pointer;
+  }
+
   .logo-description {
     display: block;
     font-size: 12px;
@@ -91,6 +102,7 @@
 
   .user-section {
     display: flex;
+    font-weight: 700;
   }
 
   .menu-trigger {
@@ -115,9 +127,15 @@
   .menu-item-button {
     width: 100%;
     padding: 8px 16px;
+    font-weight: 700;
+  }
+
+  .menu-item-button:hover {
+    color: var(--green-color);
   }
 
   img.profile-image {
     max-width: 48px;
+    border-radius: 48px;
   }
 </style>

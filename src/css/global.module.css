@@ -30,6 +30,15 @@ p {
   line-height: 1.35;
 }
 
+a {
+  color: var(--black-color);
+}
+
+a:hover,
+a:focus {
+  color: var(--green-color);
+}
+
 label {
   display: block;
   padding-bottom: 8px;
@@ -65,7 +74,6 @@ button {
   border: unset;
   font-family: inherit;
   font-size: inherit;
-  text-transform: uppercase;
   cursor: pointer;
 }
 
