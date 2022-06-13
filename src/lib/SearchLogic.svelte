@@ -194,9 +194,6 @@
   }
 
   .page-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
     margin-bottom: 32px;
   }
 
@@ -206,9 +203,6 @@
   }
 
   .single-result {
-    display: grid;
-    grid-template-columns: 128px 1fr;
-    gap: 16px;
     padding: 24px;
     margin-bottom: 12px;
     border: 1px solid var(--border-color);
@@ -227,5 +221,21 @@
 
   .single-result-image {
     width: 124px;
+  }
+
+  @media (min-width: 480px) {
+    .single-result {
+      display: grid;
+      grid-template-columns: 128px 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .page-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
   }
 </style>
