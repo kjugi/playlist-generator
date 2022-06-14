@@ -14,8 +14,11 @@ export const trackRatio = (
 ) => {
   const currentRatio = albumsPopularity.reduce((prev, current) => prev + current, 0);
   const newPercentageTotal = 100 / currentRatio;
-  const percentagePerAlbum = albumsPopularity.map(singlePopularity => newPercentageTotal * singlePopularity);
-  const songsPerAlbum = percentagePerAlbum.map(value => Math.round(songsPerArtist * (value / 100)));
+  const songsPerAlbum = albumsPopularity
+    // Calc % value
+    .map(singlePopularity => newPercentageTotal * singlePopularity)
+    // Convert to number
+    .map(value => Math.round(songsPerArtist * (value / 100)));
 
   if (
     songsPerAlbum.reduce((sum, current) => sum + current, 0) !== songsPerArtist &&
