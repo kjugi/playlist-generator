@@ -242,35 +242,42 @@ import { trackRatio } from "src/utils/trackRatio";
 </script>
 
 <div>
-  <p>
-    Select playlist options
-  </p>
-
-  <div>
-    <label for="playlistName">
-      Playlist name
-    </label>
-    <input
-      type="text"
-      name="playlistName"
-      disabled={isLoading}
-      bind:value={playlistName}
-    />
+  <div class={styles.progress}>
+    <h1>
+      Select playlist options
+    </h1>
+    <p>
+      step: 3/3
+    </p>
   </div>
 
-  {#if playlistType !== PlaylistEnum.TOPSONGS}
-    <div>
-      <label for="songsPerArtist">
-        Max tracks per artists (0 equals all)
+  <div class="playlist-settings">
+    <div class="input-container">
+      <label for="playlistName">
+        Playlist name
       </label>
       <input
         type="text"
-        name="songsPerArtist"
+        name="playlistName"
         disabled={isLoading}
-        bind:value={songsPerArtist}
+        bind:value={playlistName}
       />
     </div>
-  {/if}
+
+    {#if playlistType !== PlaylistEnum.TOPSONGS}
+      <div class="input-container">
+        <label for="songsPerArtist">
+          Max tracks per artists (0 equals all)
+        </label>
+        <input
+          type="text"
+          name="songsPerArtist"
+          disabled={isLoading}
+          bind:value={songsPerArtist}
+        />
+      </div>
+    {/if}
+  </div>
 
   <div class="actions">
     <button
@@ -298,3 +305,10 @@ import { trackRatio } from "src/utils/trackRatio";
     </button>
   </div>
 </div>
+
+<style>
+.playlist-settings,
+.input-container {
+  margin-bottom: 24px;
+}
+</style>

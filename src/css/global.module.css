@@ -20,7 +20,6 @@
 h1 {
   margin: 24px auto;
   color: var(--black-color);
-  text-transform: uppercase;
   font-size: 48px;
   font-weight: 700;
 }
@@ -46,7 +45,8 @@ label {
   font-weight: 700;
 }
 
-input {
+input[type=text],
+input[type=number] {
   appearance: none;
   background-image: none;
   border: 0px;
@@ -63,9 +63,55 @@ input {
   color: var(--text-base);
 }
 
-input:focus {
+input[type=text]:focus,
+input[type=number]:focus {
   box-shadow: inset 0 0 0 3px var(--black-color);
   outline: 0px;
+}
+
+input[type=radio] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.radio-container {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.radio-container label {
+  padding: 0 0 0 24px;
+}
+
+.radio-container span {
+  position: absolute;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  background-color: var(--white-color);
+  border: 2px solid var(--black-color);
+  border-radius: 24px;
+}
+
+span.radio-container-active {
+  background-color: var(--primary-color);
+}
+
+.radio-container span:after {
+  content: '';
+  border: 2px solid #fff;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  border-radius: 16px;
+  top: 0px;
+  left: 0px;
 }
 
 button {
@@ -114,4 +160,17 @@ button.secondary:hover,
 button.secondary:active {
   background-color: var(--black-color);
   color: var(--white-color);
+}
+
+.progress {
+  margin-bottom: 32px;
+}
+
+.progress h1 {
+  margin-bottom: 0;
+}
+
+.progress p {
+  margin-top: 0;
+  font-size: 12px;
 }

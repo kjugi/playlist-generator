@@ -1,7 +1,7 @@
 <script lang="ts">
 import styles from '../css/global.module.css';
 
-import type { PlaylistType } from "src/types/playlist";
+import { PlaylistType } from "src/types/playlist";
 
   export let step: number;
   export let isLoading: boolean;
@@ -9,36 +9,50 @@ import type { PlaylistType } from "src/types/playlist";
 </script>
 
 <div>
-  <p>
-    How we should pick the tracks?
-  </p>
+  <div class={styles.progress}>
+    <h1>
+      How we should pick the tracks?
+    </h1>
+    <p>
+      step: 2/3
+    </p>
+  </div>
 
-  <input
-    type="radio"
-    name="playlistType"
-    id="topSongs"
-    value="topSongs"
-    bind:group={playlistType}
-  />
-  <label for="topSongs">Top songs</label>
+  <div class={styles['radio-container']}>
+    <input
+      type="radio"
+      name="playlistType"
+      id={PlaylistType.TOPSONGS}
+      value={PlaylistType.TOPSONGS}
+      bind:group={playlistType}
+    />
+    <label for={PlaylistType.TOPSONGS}>Top songs</label>
+    <span class={playlistType === PlaylistType.TOPSONGS ? styles['radio-container-active'] : ''}/>
+  </div>
 
-  <input
-    type="radio"
-    name="playlistType"
-    id="fromAll"
-    value="fromAll"
-    bind:group={playlistType}
-  />
-  <label for="fromAll">From all songs</label>
+  <div class={styles['radio-container']}>
+    <input
+      type="radio"
+      name="playlistType"
+      id={PlaylistType.FROMALL}
+      value={PlaylistType.FROMALL}
+      bind:group={playlistType}
+    />
+    <label for={PlaylistType.FROMALL}>From all songs</label>
+    <span class={playlistType === PlaylistType.FROMALL ? styles['radio-container-active'] : ''}/>
+  </div>
 
-  <input
-    type="radio"
-    name="playlistType"
-    id="latestAlbum"
-    value="latestAlbum"
-    bind:group={playlistType}
-  />
-  <label for="latestAlbum">Latest album only</label>
+  <div class={styles['radio-container']}>
+    <input
+      type="radio"
+      name="playlistType"
+      id={PlaylistType.LATESTALBUM}
+      value={PlaylistType.LATESTALBUM}
+      bind:group={playlistType}
+    />
+    <label for={PlaylistType.LATESTALBUM}>Latest album only</label>
+    <span class={playlistType === PlaylistType.LATESTALBUM ? styles['radio-container-active'] : ''}/>
+  </div>
 
   <div class="actions">
     <button

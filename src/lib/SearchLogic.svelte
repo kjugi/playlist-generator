@@ -45,6 +45,14 @@
 </script>
 
 <div>
+  <div class={styles.progress}>
+    <h1>
+      Search
+    </h1>
+    <p>
+      step: 1/3
+    </p>
+  </div>
   <div class="search-wrapper">
     <label for="search">
       Search for artists and pick them
