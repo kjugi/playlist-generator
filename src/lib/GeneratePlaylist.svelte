@@ -302,7 +302,7 @@ import { trackRatio } from "src/utils/trackRatio";
         <input
           type="text"
           name="songsPerAlbum"
-          disabled={isLoading}
+          disabled
           bind:value={songsPerAlbum}
         />
       </div>
