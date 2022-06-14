@@ -38,6 +38,7 @@ import { trackRatio } from "src/utils/trackRatio";
   let tracks: SingleTrack[] | SimpleTrackItem[] = [];
 
   let songsPerArtist = '';
+  let songsPerAlbum = '';
   let playlistName = '';
 
   const generatePlaylist = async () => {
@@ -66,6 +67,7 @@ import { trackRatio } from "src/utils/trackRatio";
   const resetBindedFields = () => {
     playlistName = '';
     songsPerArtist = '';
+    songsPerAlbum = '';
     tracks = [];
     artistAlbums = {};
   }
@@ -289,6 +291,19 @@ import { trackRatio } from "src/utils/trackRatio";
           name="songsPerArtist"
           disabled={isLoading}
           bind:value={songsPerArtist}
+        />
+      </div>
+
+      <div class="input-container">
+        // TODO
+        <label for="songsPerAlbum">
+          Max tracks per ALBUM (0 equals all)
+        </label>
+        <input
+          type="text"
+          name="songsPerAlbum"
+          disabled={isLoading}
+          bind:value={songsPerAlbum}
         />
       </div>
     {/if}
