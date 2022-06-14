@@ -208,6 +208,10 @@
     border: 1px solid var(--border-color);
   }
 
+  .single-result-data {
+    grid-column: 2;
+  }
+
   .single-result-text {
     display: flex;
     justify-content: space-between;
