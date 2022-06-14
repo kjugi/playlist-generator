@@ -197,8 +197,9 @@ import { trackRatio } from "src/utils/trackRatio";
     }
   }
 
-  const fetchAlbumsWithTracks = async (artistId: string, albumIds: string[]) => {
+  const fetchAlbumsWithTracks = async (artistId: ArtistId, albumIds: string[]) => {
     // API accepts max 20 albums at single call so we have to split it for separate arrays
+    // TODO: Verify if necessary since limit is 20 in prev request
     const albumsReduced = albumIds.reduce<Array<Array<string>>>((acc, albumId, index) => {
       if (index % 20 || index === 1) {
         acc[acc.length - 1].push(albumId);
@@ -238,6 +239,12 @@ import { trackRatio } from "src/utils/trackRatio";
         isLoading = false;
       }
     }
+
+    sortArtistAlbums(artistId);
+  }
+
+  const sortArtistAlbums = (artistId: ArtistId) => {
+    artistAlbums[artistId].sort((a, b) => a.popularity - b.popularity).reverse();
   }
 </script>
 

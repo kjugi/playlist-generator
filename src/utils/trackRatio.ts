@@ -17,8 +17,20 @@ export const trackRatio = (
   const percentagePerAlbum = albumsPopularity.map(singlePopularity => newPercentageTotal * singlePopularity);
   const songsPerAlbum = percentagePerAlbum.map(value => Math.round(songsPerArtist * (value / 100)));
 
-  // TODO: Check is any album has more than 0 sons per album
-  // Happens when artist has a lot of albums and songsPerArtist is low.
-  // Let's run in the loop: cut the last album (less popular) and check for songsPerArtist count again
+  if (
+    songsPerAlbum.reduce((sum, current) => sum + current, 0) !== songsPerArtist &&
+    albumsPopularity.length > 0
+  ) {
+    // Happens when: many albums && low songsPerArtist
+    // It could return all albums with values under 0,5 which results as 0 at the end
+    //
+    // Solution - do in the loop:
+    // 1. Cut the last album (less popular)
+    // 2. Check for songsPerArtist count again after new calculations
+    const newAlbumsArray = albumsPopularity.slice(0, -1);
+
+    trackRatio(songsPerArtist, newAlbumsArray);
+  }
+
   return songsPerAlbum
 };

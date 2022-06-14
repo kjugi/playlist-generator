@@ -38,7 +38,7 @@ import { PlaylistType } from "src/types/playlist";
       value={PlaylistType.FROMALL}
       bind:group={playlistType}
     />
-    <label for={PlaylistType.FROMALL}>From all songs</label>
+    <label for={PlaylistType.FROMALL}>From all albums</label>
     <span class={playlistType === PlaylistType.FROMALL ? styles['radio-container-active'] : ''}/>
   </div>
 
