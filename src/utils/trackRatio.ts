@@ -29,7 +29,7 @@ export const trackRatio = (
     // 2. Check for songsPerArtist count again after new calculations
     const newAlbumsArray = albumsPopularity.slice(0, -1);
 
-    trackRatio(songsPerArtist, newAlbumsArray);
+    return trackRatio(songsPerArtist, newAlbumsArray);
   }
 
   return songsPerAlbum

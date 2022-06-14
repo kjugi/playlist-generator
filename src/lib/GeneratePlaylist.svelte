@@ -163,7 +163,15 @@ import { trackRatio } from "src/utils/trackRatio";
       .map(singleAlbum => {
         const albumsTracks = artistAlbums[singleAlbum.artistId].map(album => album.tracks.items);
 
-        return albumsTracks.map((tracks, index) => tracks.slice(0, singleAlbum.trackCount[index])).flat();
+        return albumsTracks.map((tracks, index) => {
+          const element = singleAlbum.trackCount[index];
+
+          if (element) {
+            return tracks.slice(0, element)
+          } else {
+            return null
+          }
+        }).flat().filter(n => n);
       })
       .reduce((prev, current) => ([...prev, ...current]), []);
   }
