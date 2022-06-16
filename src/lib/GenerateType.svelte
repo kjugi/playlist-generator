@@ -4,7 +4,6 @@ import styles from '../css/global.module.css';
 import { PlaylistType } from "src/types/playlist";
 
   export let step: number;
-  export let isLoading: boolean;
   export let playlistType: PlaylistType;
 </script>
 

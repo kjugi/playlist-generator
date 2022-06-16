@@ -147,7 +147,6 @@
       {#if step === 2}
         <GenerateType
           bind:step
-          bind:isLoading
           bind:playlistType
         />
       {/if}
