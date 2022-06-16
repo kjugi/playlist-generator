@@ -142,14 +142,14 @@ import { trackRatio } from "src/utils/trackRatio";
       await callback(selectedArtists[i], limit);
     }
 
-    tracks = extractTracks();
+    extractTracks();
+    // tracks = extractTracks();
 
-    await createSpotifyPlaylist();
+    // await createSpotifyPlaylist();
   }
 
-  const extractTracks = () => {
-    // TODO: Add real sorting method combined by song popularity and liked/not liked
-    return Object.values(artistAlbums)
+  const extractTracks = async () => {
+    const singleArtistAlbumsTrackRatio = Object.values(artistAlbums)
       .reduce<TrackCountPerAlbum>((prev, albumsData, index) => {
         return [
           ...prev,
@@ -162,20 +162,101 @@ import { trackRatio } from "src/utils/trackRatio";
           }
         ]
       }, [])
-      .map(singleAlbum => {
-        const albumsTracks = artistAlbums[singleAlbum.artistId].map(album => album.tracks.items);
 
-        return albumsTracks.map((tracks, index) => {
-          const element = singleAlbum.trackCount[index];
+    const onlyUsedAlbumTracks = singleArtistAlbumsTrackRatio.map(singleAlbum => (
+      artistAlbums[singleAlbum.artistId].slice(0, singleAlbum.trackCount.length).map(album => album.tracks.items)
+    ))
 
-          if (element) {
-            return tracks.slice(0, element)
-          } else {
-            return null
+    const filteredUsedAlbumTracks = [...onlyUsedAlbumTracks];
+    const likedTracks: { id: string, [key: string]: unknown }[][][] = [];
+
+    // Check liked songs
+    for (let i = 0; i < onlyUsedAlbumTracks.length; i++) {
+      const artistIndex = i;
+      const artistAlbumsItem = onlyUsedAlbumTracks[i];
+
+      for (let j = 0; j < artistAlbumsItem.length; j++) {
+        const albumIndex = j;
+        const tracks = artistAlbumsItem[j];
+        try {
+          const trimmedTracks = tracks.slice(0, 50);
+
+          const likedSongsArray = await fetchUtil<boolean[]>({
+            path: '/me/tracks/contains',
+            configProps: {
+              method: 'GET',
+            },
+            queryParams: {
+              ids: trimmedTracks.map(track => track.id).join(',')
+            }
+          });
+
+          if (!likedTracks[artistIndex]) {
+            likedTracks[artistIndex] = []
           }
-        }).flat().filter(n => n);
-      })
-      .reduce((prev, current) => ([...prev, ...current]), []);
+
+          likedTracks[artistIndex][albumIndex] = trimmedTracks.filter((_, index) => likedSongsArray[index]);
+          filteredUsedAlbumTracks[artistIndex][albumIndex] = trimmedTracks.filter((_, index) => !likedSongsArray[index])
+        } catch (err) {
+          errorData = handleError(
+            err,
+            `Error occured during liked songs check: `
+          );
+
+          throw new Error(errorData.error.message);
+        }
+      }
+    }
+
+    // Get track details and sort by popularity
+    for (let k = 0; k < filteredUsedAlbumTracks.length; k++) {
+      const artistIndex = k;
+      const artistAlbumsItem = filteredUsedAlbumTracks[k];
+
+      for (let l = 0; l < artistAlbumsItem.length; l++) {
+        const albumIndex = l;
+        const tracks = artistAlbumsItem[l];
+        try {
+          const trimmedTracks = tracks.slice(0, 50);
+
+          const albumTracksDetails = await fetchUtil<{ tracks: SingleTrack[] }>({
+            path: '/tracks',
+            configProps: {
+              method: 'GET',
+            },
+            queryParams: {
+              ids: trimmedTracks.map(track => track.id).join(',')
+            }
+          });
+
+          if (!likedTracks[artistIndex]) {
+            likedTracks[artistIndex] = []
+          }
+
+          likedTracks[artistIndex][albumIndex].push(
+            ...albumTracksDetails.tracks.sort((a, b) => a.popularity - b.popularity).reverse()
+          );
+        } catch (err) {
+          errorData = handleError(
+            err,
+            `Error occured during single track fetch for popularity: `
+          );
+
+          throw new Error(errorData.error.message);
+        }
+      }
+    }
+
+    singleArtistAlbumsTrackRatio.forEach((singleArtist, artistIndex) => {
+      tracks.push(
+        ...likedTracks[artistIndex].map((localTracks, index) => {
+          const maxTrack = singleArtist.trackCount[index];
+
+          return localTracks.slice(0, maxTrack)
+        }).flat()
+        // .reduce((prev, current) => ([...prev, ...current]), []);
+      )
+    });
   }
 
   const fetchArtistAlbums = async (artist: SingleArtist, limit?: number) => {
