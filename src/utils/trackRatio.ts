@@ -11,7 +11,7 @@
 export const trackRatio = (
   songsPerArtist: number,
   albumsPopularity: Array<number>,
-) => {
+): number[] => {
   const currentRatio = albumsPopularity.reduce((prev, current) => prev + current, 0);
   const newPercentageTotal = 100 / currentRatio;
   const songsPerAlbum = albumsPopularity
@@ -35,5 +35,5 @@ export const trackRatio = (
     return trackRatio(songsPerArtist, newAlbumsArray);
   }
 
-  return songsPerAlbum
+  return songsPerAlbum;
 };

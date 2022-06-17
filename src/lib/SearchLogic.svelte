@@ -1,8 +1,8 @@
 <script lang="ts">
   import styles from '../css/global.module.css';
-  import type { SearchArtistResponse, SingleArtist } from 'src/types/artists';
   import { fetchUtil, type ErrorType } from 'src/utils/fetchUtil';
   import { handleError } from 'src/utils/errorHandling';
+  import type { SearchArtistResponse, SingleArtist } from 'src/types/artists';
 
   export let artists: SingleArtist[];
   export let selectedArtists: SingleArtist[];
@@ -33,15 +33,16 @@
     } finally {
       isLoading = false;
     }
-  }
+  };
 
-  const selectArtist = (artist: SingleArtist) => {
-    selectedArtists = [...selectedArtists, artist]
-  }
+  const selectArtist = (artistId: string) => {
+    const artist = artists.find(({ id }) => id === artistId);
+    selectedArtists = [...selectedArtists, artist];
+  };
 
-  const filterOutArtist = (artist: SingleArtist) => {
-    selectedArtists = selectedArtists.filter(single => single.id !== artist.id)
-  }
+  const filterOutArtist = (artistId: string) => {
+    selectedArtists = selectedArtists.filter(({ id }) => id !== artistId);
+  };
 </script>
 
 <div>
@@ -62,7 +63,7 @@
       name="search"
       disabled={isLoading}
       placeholder="i.e. Drake"
-      on:change={e => searchArtist(e)}
+      on:change={searchArtist}
     />
     {#if selectedArtists.length < 2}
       <p class="search-rule">
@@ -83,13 +84,13 @@
           </p>
         </div>
       {/if}
-      {#each artists as artist}
-        {#if selectedArtists.length === 0 || !selectedArtists.find(item => item.id === artist.id)}
+      {#each artists as { images, id, external_urls, name, followers }}
+        {#if selectedArtists.length === 0 || !selectedArtists.find(item => item.id === id)}
           <div class="single-result">
-            {#if artist.images[0]?.url}
+            {#if images[0]?.url}
               <img
-                src={artist.images[0].url}
-                alt={artist.name}
+                src={images[0].url}
+                alt={name}
                 class="single-result-image"
               />
             {/if}
@@ -98,8 +99,8 @@
                 <span class="single-result-label">
                   Name:
                 </span>
-                <a href={artist.external_urls.spotify} target="_blank">
-                  {artist.name}
+                <a href={external_urls.spotify} target="_blank">
+                  {name}
                 </a>
               </p>
 
@@ -107,17 +108,17 @@
                 <span class="single-result-label">
                   Followers count:
                 </span>
-                {artist.followers.total}
+                {followers.total}
               </p>
 
               <button
                 type="button"
                 class={styles.primary}
                 disabled={
-                  !!selectedArtists.find(el => el.id === artist.id) ||
+                  !!selectedArtists.find(el => el.id === id) ||
                   isLoading
                 }
-                on:click={() => selectArtist(artist)}
+                on:click={() => selectArtist(id)}
               >
                 Select artist
               </button>
@@ -138,12 +139,12 @@
           </p>
         </div>
       {/if}
-      {#each selectedArtists as artist}
+      {#each selectedArtists as { images, name, external_urls, id }}
         <div class="single-result">
-          {#if artist.images[0]?.url}
+          {#if images[0]?.url}
             <img
-              src={artist.images[0].url}
-              alt={artist.name}
+              src={images[0].url}
+              alt={name}
               class="single-result-image"
             />
           {/if}
@@ -152,8 +153,8 @@
               <span class="single-result-label">
                 Name:
               </span>
-              <a href={artist.external_urls.spotify} target="_blank">
-                {artist.name}
+              <a href={external_urls.spotify} target="_blank">
+                {name}
               </a>
             </p>
 
@@ -161,7 +162,7 @@
               type="button"
               class={styles.secondary}
               disabled={isLoading}
-              on:click={() => filterOutArtist(artist)}
+              on:click={() => filterOutArtist(id)}
             >
               Remove artist
             </button>

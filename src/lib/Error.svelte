@@ -1,6 +1,6 @@
 <script lang="ts">
-import { createEventDispatcher } from 'svelte'
-import { ErrorCode, type ErrorType } from "src/utils/fetchUtil";
+import { createEventDispatcher } from 'svelte';
+import { ErrorCode, type ErrorType } from 'src/utils/fetchUtil';
 import styles from '../css/global.module.css';
 
 export let errorData: ErrorType | null;
@@ -10,7 +10,7 @@ const dispatch = createEventDispatcher();
 
 const resetCreator = () => {
   window.location.reload();
-}
+};
 </script>
 
 {#if isError && errorData}

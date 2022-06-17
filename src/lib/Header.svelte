@@ -1,14 +1,16 @@
 <script lang="ts">
   import Cookie from 'js-cookie';
 
-  export let isLogged;
-  export let userData;
+  import type { UserDataType } from 'src/types/user';
+
+  export let isLogged: boolean;
+  export let userData: UserDataType;
 
   let menuOpened = false;
 
   const resetCreator = () => {
     window.location.reload();
-  }
+  };
 </script>
 
 <header>
@@ -55,8 +57,8 @@
               type="button"
               class="menu-item-button"
               on:click={() => {
-                Cookie.remove('token')
-                window.location.replace('/')
+                Cookie.remove('token');
+                window.location.replace('/');
               }}
             >
               Logout

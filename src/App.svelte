@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Cookies from 'js-cookie';
-  import LoginButton from './lib/LoginButton.svelte'
+  import LoginButton from './lib/LoginButton.svelte';
   import Header from './lib/Header.svelte';
   import Error from './lib/Error.svelte';
   import SearchLogic from './lib/SearchLogic.svelte';
@@ -14,16 +14,20 @@
 
   import type { SingleArtist } from './types/artists';
   import type { PlaylistType } from './types/playlist';
+  import type {
+    MeResponse,
+    UserDataType
+  } from './types/user';
 
-  let isLogged: boolean = false;
-  let isLoading: boolean = false;
-  let isError: boolean = false;
+  let isLogged = false;
+  let isLoading = false;
+  let isError = false;
   let errorData: ErrorType | null = null;
-  let userData = {
+  let userData: UserDataType = {
     name: '',
     image: '',
     id: '',
-  }
+  };
   let step = 0;
   let artists: SingleArtist[] = [];
   let selectedArtists: SingleArtist[] = [];
@@ -42,7 +46,7 @@
         return {
           ...acc,
           [keyValue[0]]: keyValue[1]
-        }
+        };
       }, {});
 
     if (params?.access_token && !Cookies.get('token')) {
@@ -55,7 +59,7 @@
       );
       isLogged = true;
     } else if (Cookies.get('token') && !params.error) {
-      isLogged = true
+      isLogged = true;
     } else {
       logout();
     }
@@ -69,7 +73,7 @@
     isLoading = true;
 
     try {
-      const data = await fetchUtil({
+      const data = await fetchUtil<MeResponse>({
         path: '/me',
         configProps: {
           method: 'GET',
@@ -77,7 +81,7 @@
       });
       userData.name = data.display_name;
       userData.image = data.images[0].url || '';
-      userData.id = data.id
+      userData.id = data.id;
     } catch (err) {
       const localError = handleError(err);
 
@@ -89,18 +93,18 @@
     } finally {
       isLoading = false;
     }
-  }
+  };
 
   const logout = () => {
     Cookies.remove('token');
     isLogged = false;
     errorData = null;
-  }
+  };
 
   const reloadApp = () => {
     logout();
     window.location.replace(window.location.pathname);
-  }
+  };
 </script>
 
 <main>

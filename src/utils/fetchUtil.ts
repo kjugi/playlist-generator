@@ -1,4 +1,4 @@
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie';
 
 export type QueryParams = {
   [key: string]: string | number | boolean
@@ -49,7 +49,7 @@ export const fetchUtil = async <T = any>({
     },
   });
 
-  const jsonResponse = await requestFetch.json();
+  const jsonResponse = await requestFetch.json() as T | ErrorType;
 
   if (
     !requestFetch.ok ||
@@ -59,4 +59,4 @@ export const fetchUtil = async <T = any>({
   }
 
   return jsonResponse as T;
-}
+};

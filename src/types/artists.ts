@@ -18,7 +18,7 @@ export type SingleArtistAlbum = {
 export type SingleArtist = {
   external_urls: {
     spotify: string;
-  },
+  };
   href: string;
   name: string;
   popularity: number;

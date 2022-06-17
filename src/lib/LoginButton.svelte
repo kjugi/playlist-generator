@@ -1,7 +1,7 @@
 <script lang="ts">
   import styles from '../css/global.module.css';
 
-  const runLoginAction = async () => {
+  const runLoginAction = () => {
     const baseUrl = 'https://accounts.spotify.com/authorize';
     const params = new URLSearchParams({
       response_type: 'token',
@@ -11,7 +11,7 @@
     const fullUrl = `${baseUrl}?${params.toString()}&redirect_uri=${encodeURIComponent('http://localhost:3000/')}`;
 
     window.location.replace(fullUrl);
-  }
+  };
 </script>
 
 <button

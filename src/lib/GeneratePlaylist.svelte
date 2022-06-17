@@ -1,23 +1,23 @@
 <script lang="ts">
-import { fetchUtil, type ErrorType } from "src/utils/fetchUtil";
-import { handleError } from "src/utils/errorHandling";
-import { PlaylistType as PlaylistEnum } from "../types/playlist";
+import { fetchUtil, type ErrorType } from 'src/utils/fetchUtil';
+import { handleError } from 'src/utils/errorHandling';
+import { PlaylistType as PlaylistEnum } from '../types/playlist';
 import styles from '../css/global.module.css';
 
 import type {
   SingleAlbum,
   SeveralAlbumsResponse,
-} from "src/types/albums";
+} from 'src/types/albums';
 import type {
   SingleArtist,
   ArtistAlbumListResponse,
-} from "src/types/artists";
-import type { PlaylistType } from "src/types/playlist";
+} from 'src/types/artists';
+import type { PlaylistType } from 'src/types/playlist';
 import type {
   SingleTrack,
   TopTracksResponse
-} from "src/types/tracks";
-import { trackRatio } from "src/utils/trackRatio";
+} from 'src/types/tracks';
+import { trackRatio } from 'src/utils/trackRatio';
 
   export let selectedArtists: SingleArtist[];
   export let step: number;
@@ -25,7 +25,7 @@ import { trackRatio } from "src/utils/trackRatio";
   export let playlistType: PlaylistType;
   export let userData: {
     id: string;
-  }
+  };
   export let errorData: ErrorType | null;
 
   type ArtistId = string;
@@ -64,7 +64,7 @@ import { trackRatio } from "src/utils/trackRatio";
       default:
         return;
     }
-  }
+  };
 
   const resetBindedFields = () => {
     playlistName = '';
@@ -72,7 +72,7 @@ import { trackRatio } from "src/utils/trackRatio";
     songsPerAlbum = '';
     tracks = [];
     artistAlbums = {};
-  }
+  };
 
   const createSpotifyPlaylist = async () => {
     try {
@@ -109,7 +109,7 @@ import { trackRatio } from "src/utils/trackRatio";
       step = 0;
       isLoading = false;
     }
-  }
+  };
 
   const generateFromTopSongs = async () => {
     for (let i = 0; i < selectedArtists.length; i++) {
@@ -134,7 +134,7 @@ import { trackRatio } from "src/utils/trackRatio";
     }
 
     await createSpotifyPlaylist();
-  }
+  };
 
   const fromPickedArtists = async (
     callback: (artist: SingleArtist, limit: number) => Promise<void>,
@@ -147,7 +147,7 @@ import { trackRatio } from "src/utils/trackRatio";
     await extractTracks();
 
     await createSpotifyPlaylist();
-  }
+  };
 
   const extractTracks = async () => {
     const singleArtistAlbumsTrackRatio = Object.values(artistAlbums)
@@ -161,14 +161,14 @@ import { trackRatio } from "src/utils/trackRatio";
               albumsData.map(single => single.popularity)
             )
           }
-        ]
-      }, [])
+        ];
+      }, []);
 
     const onlyUsedAlbumTracks = singleArtistAlbumsTrackRatio.map(singleAlbum => (
       artistAlbums[singleAlbum.artistId]
         .slice(0, singleAlbum.trackCount.length)
         .map(album => album.tracks.items)
-    ))
+    ));
 
     const filteredUsedAlbumTracks = [...onlyUsedAlbumTracks];
     const likedTracks: string[][][] = [];
@@ -195,18 +195,18 @@ import { trackRatio } from "src/utils/trackRatio";
           });
 
           if (!likedTracks[artistIndex]) {
-            likedTracks[artistIndex] = []
+            likedTracks[artistIndex] = [];
           }
 
           likedTracks[artistIndex][albumIndex] = trimmedTracks
             .filter((_, index) => likedSongsArray[index])
             .map(track => track.uri);
           filteredUsedAlbumTracks[artistIndex][albumIndex] = trimmedTracks
-            .filter((_, index) => !likedSongsArray[index])
+            .filter((_, index) => !likedSongsArray[index]);
         } catch (err) {
           errorData = handleError(
             err,
-            `Error occured during liked songs check: `
+            'Error occured during liked songs check: '
           );
 
           throw new Error(errorData.error.message);
@@ -236,7 +236,7 @@ import { trackRatio } from "src/utils/trackRatio";
           });
 
           if (!likedTracks[artistIndex]) {
-            likedTracks[artistIndex] = []
+            likedTracks[artistIndex] = [];
           }
 
           likedTracks[artistIndex][albumIndex].push(
@@ -248,7 +248,7 @@ import { trackRatio } from "src/utils/trackRatio";
         } catch (err) {
           errorData = handleError(
             err,
-            `Error occured during single track fetch for popularity: `
+            'Error occured during single track fetch for popularity: '
           );
 
           throw new Error(errorData.error.message);
@@ -260,11 +260,11 @@ import { trackRatio } from "src/utils/trackRatio";
       tracks.push(
         ...likedTracks[artistIndex].map((localTracks, albumIndex) => {
           const maxTrack = singleArtist.trackCount[albumIndex];
-          return localTracks.slice(0, maxTrack)
+          return localTracks.slice(0, maxTrack);
         }).flat()
-      )
+      );
     });
-  }
+  };
 
   const fetchArtistAlbums = async (artist: SingleArtist, limit?: number) => {
     try {
@@ -293,7 +293,7 @@ import { trackRatio } from "src/utils/trackRatio";
     } finally {
       isLoading = false;
     }
-  }
+  };
 
   const fetchAlbumsWithTracks = async (artistId: ArtistId, albumIds: string[]) => {
     // API accepts max 20 albums at single call so we have to split it for separate arrays
@@ -320,13 +320,13 @@ import { trackRatio } from "src/utils/trackRatio";
           queryParams: {
             ids: albumsReduced[n].join(','),
           }
-        })
+        });
 
         if (!artistAlbums[artistId]) {
           artistAlbums[artistId] = [];
         }
 
-        artistAlbums[artistId].push(...albums)
+        artistAlbums[artistId].push(...albums);
       } catch (err) {
         errorData = handleError(
           err,
@@ -339,11 +339,11 @@ import { trackRatio } from "src/utils/trackRatio";
     }
 
     sortArtistAlbums(artistId);
-  }
+  };
 
   const sortArtistAlbums = (artistId: ArtistId) => {
     artistAlbums[artistId].sort((a, b) => a.popularity - b.popularity).reverse();
-  }
+  };
 </script>
 
 <div>
@@ -416,7 +416,7 @@ import { trackRatio } from "src/utils/trackRatio";
       class={styles.secondary}
       disabled={isLoading}
       on:click={() => {
-        step--
+        step--;
       }}
     >
       Back

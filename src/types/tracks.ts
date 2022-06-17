@@ -1,5 +1,5 @@
-import type { SingleAlbum } from "./albums";
-import type { SingleArtist } from "./artists";
+import type { SingleAlbum } from './albums';
+import type { SingleArtist } from './artists';
 
 export type SingleTrack = {
   album: SingleAlbum;

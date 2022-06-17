@@ -1,7 +1,7 @@
 <script lang="ts">
 import styles from '../css/global.module.css';
 
-import { PlaylistType } from "src/types/playlist";
+import { PlaylistType } from 'src/types/playlist';
 
   export let step: number;
   export let playlistType: PlaylistType;
@@ -58,7 +58,7 @@ import { PlaylistType } from "src/types/playlist";
       type="button"
       class={styles.primary}
       on:click={() => {
-        step++
+        step++;
       }}
     >
       Go next
@@ -67,7 +67,7 @@ import { PlaylistType } from "src/types/playlist";
       type="button"
       class={styles.secondary}
       on:click={() => {
-        step--
+        step--;
       }}
     >
       Back
