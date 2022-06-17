@@ -7,7 +7,6 @@ import styles from '../css/global.module.css';
 import type {
   SingleAlbum,
   SeveralAlbumsResponse,
-  SimpleTrackItem
 } from "src/types/albums";
 import type {
   SingleArtist,
@@ -15,6 +14,7 @@ import type {
 } from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
 import type {
+  SingleTrack,
   TopTracksResponse
 } from "src/types/tracks";
 import { trackRatio } from "src/utils/trackRatio";
@@ -37,7 +37,7 @@ import { trackRatio } from "src/utils/trackRatio";
   let artistAlbums: {
     [key: ArtistId]: SingleAlbum[];
   } = {};
-  let tracks: SingleTrack[] | SimpleTrackItem[] = [];
+  let tracks: string[] = [];
 
   let songsPerArtist = '';
   let songsPerAlbum = '';
@@ -95,7 +95,7 @@ import { trackRatio } from "src/utils/trackRatio";
         configProps: {
           method: 'POST',
           body: JSON.stringify({
-            uris: tracks.map(track => track.uri),
+            uris: tracks,
           })
         },
       });
@@ -122,7 +122,7 @@ import { trackRatio } from "src/utils/trackRatio";
           },
         });
 
-        tracks.push(...data.tracks);
+        tracks.push(...data.tracks.map(track => track.uri));
       } catch (err) {
         errorData = handleError(
           err,
@@ -144,10 +144,9 @@ import { trackRatio } from "src/utils/trackRatio";
       await callback(selectedArtists[i], limit);
     }
 
-    extractTracks();
-    // tracks = extractTracks();
+    await extractTracks();
 
-    // await createSpotifyPlaylist();
+    await createSpotifyPlaylist();
   }
 
   const extractTracks = async () => {
@@ -166,11 +165,13 @@ import { trackRatio } from "src/utils/trackRatio";
       }, [])
 
     const onlyUsedAlbumTracks = singleArtistAlbumsTrackRatio.map(singleAlbum => (
-      artistAlbums[singleAlbum.artistId].slice(0, singleAlbum.trackCount.length).map(album => album.tracks.items)
+      artistAlbums[singleAlbum.artistId]
+        .slice(0, singleAlbum.trackCount.length)
+        .map(album => album.tracks.items)
     ))
 
     const filteredUsedAlbumTracks = [...onlyUsedAlbumTracks];
-    const likedTracks: { id: string, [key: string]: unknown }[][][] = [];
+    const likedTracks: string[][][] = [];
 
     // Check liked songs
     for (let i = 0; i < onlyUsedAlbumTracks.length; i++) {
@@ -197,8 +198,11 @@ import { trackRatio } from "src/utils/trackRatio";
             likedTracks[artistIndex] = []
           }
 
-          likedTracks[artistIndex][albumIndex] = trimmedTracks.filter((_, index) => likedSongsArray[index]);
-          filteredUsedAlbumTracks[artistIndex][albumIndex] = trimmedTracks.filter((_, index) => !likedSongsArray[index])
+          likedTracks[artistIndex][albumIndex] = trimmedTracks
+            .filter((_, index) => likedSongsArray[index])
+            .map(track => track.uri);
+          filteredUsedAlbumTracks[artistIndex][albumIndex] = trimmedTracks
+            .filter((_, index) => !likedSongsArray[index])
         } catch (err) {
           errorData = handleError(
             err,
@@ -236,7 +240,10 @@ import { trackRatio } from "src/utils/trackRatio";
           }
 
           likedTracks[artistIndex][albumIndex].push(
-            ...albumTracksDetails.tracks.sort((a, b) => a.popularity - b.popularity).reverse()
+            ...albumTracksDetails.tracks
+              .sort((a, b) => a.popularity - b.popularity)
+              .map(track => track.uri)
+              .reverse()
           );
         } catch (err) {
           errorData = handleError(
@@ -251,12 +258,10 @@ import { trackRatio } from "src/utils/trackRatio";
 
     singleArtistAlbumsTrackRatio.forEach((singleArtist, artistIndex) => {
       tracks.push(
-        ...likedTracks[artistIndex].map((localTracks, index) => {
-          const maxTrack = singleArtist.trackCount[index];
-
+        ...likedTracks[artistIndex].map((localTracks, albumIndex) => {
+          const maxTrack = singleArtist.trackCount[albumIndex];
           return localTracks.slice(0, maxTrack)
         }).flat()
-        // .reduce((prev, current) => ([...prev, ...current]), []);
       )
     });
   }
