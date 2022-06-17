@@ -14,7 +14,9 @@ import type {
   ArtistAlbumListResponse,
 } from "src/types/artists";
 import type { PlaylistType } from "src/types/playlist";
-import type { SingleTrack } from "src/types/tracks";
+import type {
+  TopTracksResponse
+} from "src/types/tracks";
 import { trackRatio } from "src/utils/trackRatio";
 
   export let selectedArtists: SingleArtist[];
@@ -113,7 +115,7 @@ import { trackRatio } from "src/utils/trackRatio";
     for (let i = 0; i < selectedArtists.length; i++) {
       try {
         const artistId = selectedArtists[i].id;
-        const data = await fetchUtil({
+        const data = await fetchUtil<TopTracksResponse>({
           path: `/artists/${artistId}/top-tracks`,
           configProps: {
             method: 'GET',

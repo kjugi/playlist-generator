@@ -19,3 +19,7 @@ export type SingleTrack = {
 export type AlbumTracksResponse = {
   tracks: SingleTrack[];
 }
+
+export type TopTracksResponse = {
+  tracks: SingleTrack[];
+}
